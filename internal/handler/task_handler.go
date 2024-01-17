@@ -2,8 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/go-zoo/bone"
 	"net/http"
 )
 
@@ -38,5 +36,27 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello %v\n", bone.GetValue(r, "id"))
+	// FIXME: Temporary fixed tasks
+	tasks := []Task{
+		{
+			ID:     1,
+			Name:   "Eat Dinner",
+			Status: 0,
+		},
+		{
+			ID:     2,
+			Name:   "Go to sleep",
+			Status: 0,
+		},
+	}
+
+	response := map[string]interface{}{
+		"result": tasks,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
