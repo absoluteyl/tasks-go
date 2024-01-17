@@ -64,7 +64,7 @@ func TestGetTaskHandler(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	GetTaskHandler(rr, req)
+	GetTasksHandler(rr, req)
 
 	expectedStatus := http.StatusOK
 	if status := rr.Code; status != expectedStatus {

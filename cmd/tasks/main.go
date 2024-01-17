@@ -10,7 +10,7 @@ import (
 func main() {
 	mux := bone.New()
 	mux.Post("/tasks/create", http.HandlerFunc(handler.CreateTaskHandler))
-	mux.Get("/tasks/:id", http.HandlerFunc(handler.GetTaskHandler))
+	mux.Get("/tasks", http.HandlerFunc(handler.GetTasksHandler))
 
 	n := negroni.Classic()
 	n.UseHandler(mux)

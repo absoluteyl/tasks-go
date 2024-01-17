@@ -37,6 +37,6 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
+func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello %v\n", bone.GetValue(r, "id"))
 }
