@@ -115,10 +115,6 @@ func TestGetTaskHandler(t *testing.T) {
 			ID:     1,
 			Name:   "Eat Dinner",
 			Status: 0,
-		}, {
-			ID:     2,
-			Name:   "Go to sleep",
-			Status: 0,
 		},
 	}
 
