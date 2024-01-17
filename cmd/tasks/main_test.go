@@ -29,4 +29,15 @@ func TestCreateTaskHandler(t *testing.T) {
 	if status := rr.Code; status != http.StatusCreated {
 		t.Errorf("Handler returned wrong status code: got %v, want %v", status, http.StatusCreated)
 	}
+
+	var response map[string]map[string]interface{}
+	err = json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatalf("Error unmarshaling JSON response: %v", err)
+	}
+
+	_, ok := response["result"]
+	if !ok {
+		t.Error("Result field not found in response")
+	}
 }
