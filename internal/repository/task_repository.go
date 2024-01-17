@@ -29,3 +29,26 @@ func (r *TaskRepository) CreateTask(task *model.Task) (int, error) {
 
 	return int(lastInsertID), nil
 }
+
+func (r *TaskRepository) GetTasks() ([]model.Task, error) {
+	getTasksSQL := `
+	SELECT id, name, status FROM tasks
+	`
+	rows, err := r.db.Query(getTasksSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	tasks := []model.Task{}
+	for rows.Next() {
+		var task model.Task
+		err := rows.Scan(&task.ID, &task.Name, &task.Status)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, task)
+	}
+
+	return tasks, nil
+}
