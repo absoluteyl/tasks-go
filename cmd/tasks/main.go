@@ -2,26 +2,20 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"github.com/codegangsta/negroni"
+	"github.com/go-zoo/bone"
 	"net/http"
-	"os"
 )
 
+func createTaskHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "Hello, World!")
+}
+
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Hello, World!")
-	})
+	mux := bone.New()
+	mux.Post("/tasks/create", http.HandlerFunc(createTaskHandler))
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	address := fmt.Sprintf(":%s", port)
-	log.Printf("Server listening on %s...", address)
-
-	err := http.ListenAndServe(address, nil)
-	if err != nil {
-		log.Fatalf("Error starting server: %v", err)
-	}
+	n := negroni.Classic()
+	n.UseHandler(mux)
+	n.Run(":8080")
 }
