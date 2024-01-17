@@ -46,18 +46,10 @@ func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *TaskHandler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
-	// FIXME: Temporary fixed tasks
-	tasks := []model.Task{
-		{
-			ID:     1,
-			Name:   "Eat Dinner",
-			Status: 0,
-		},
-		{
-			ID:     2,
-			Name:   "Go to sleep",
-			Status: 0,
-		},
+	tasks, err := h.taskService.GetTasks()
+	if err != nil {
+		http.Error(w, "Error getting tasks", http.StatusInternalServerError)
+		return
 	}
 
 	response := map[string]interface{}{
@@ -65,7 +57,7 @@ func (h *TaskHandler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
