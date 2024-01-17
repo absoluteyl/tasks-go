@@ -26,8 +26,9 @@ func TestCreateTaskHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 	CreateTaskHandler(rr, req)
 
-	if status := rr.Code; status != http.StatusCreated {
-		t.Errorf("Handler returned wrong status code: got %v, want %v", status, http.StatusCreated)
+	expectedHTTPStatus := http.StatusCreated
+	if status := rr.Code; status != expectedHTTPStatus {
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedHTTPStatus)
 	}
 
 	var response map[string]map[string]interface{}
@@ -66,9 +67,9 @@ func TestGetTaskHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 	GetTasksHandler(rr, req)
 
-	expectedStatus := http.StatusOK
-	if status := rr.Code; status != expectedStatus {
-		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedStatus)
+	expectedHTTPStatus := http.StatusOK
+	if status := rr.Code; status != expectedHTTPStatus {
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedHTTPStatus)
 	}
 
 	var response map[string][]map[string]interface{}
