@@ -2,17 +2,12 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/absoluteyl/tasks-go/internal/model"
 	"net/http"
 )
 
-type Task struct {
-	ID     int    `json:"id"`
-	Name   string `json:"name"`
-	Status int    `json:"status"`
-}
-
 func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
-	var newTask Task
+	var newTask model.Task
 	err := json.NewDecoder(r.Body).Decode(&newTask)
 	if err != nil {
 		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
@@ -37,7 +32,7 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 	// FIXME: Temporary fixed tasks
-	tasks := []Task{
+	tasks := []model.Task{
 		{
 			ID:     1,
 			Name:   "Eat Dinner",

@@ -3,6 +3,7 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/absoluteyl/tasks-go/internal/model"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -59,7 +60,7 @@ func TestCreateTaskHandler(t *testing.T) {
 }
 
 func TestGetTaskHandler(t *testing.T) {
-	tasksData := []Task{
+	tasksData := []model.Task{
 		{
 			ID:     1,
 			Name:   "Eat Dinner",
