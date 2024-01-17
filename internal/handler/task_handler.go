@@ -23,12 +23,18 @@ func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// FIXME: Temporary fixed status and id
-	newTask.ID = 1
-	newTask.Status = 0
+	createdTaskID, err := h.taskService.CreateTask(&newTask)
+	if err != nil {
+		http.Error(w, "Error creating task", http.StatusInternalServerError)
+		return
+	}
 
 	response := map[string]interface{}{
-		"result": newTask,
+		"result": map[string]interface{}{
+			"id":     createdTaskID,
+			"name":   newTask.Name,
+			"status": 0, // FIXME: Temporary fixed status
+		},
 	}
 
 	w.Header().Set("Content-Type", "application/json")
