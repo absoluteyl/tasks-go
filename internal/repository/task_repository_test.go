@@ -59,3 +59,14 @@ func TestCreateTask(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotZero(t, taskID)
 }
+
+func TestGetTasks(t *testing.T) {
+	tasks, err := taskRepo.GetTasks()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, tasks)
+	assert.Len(t, tasks, 1)
+
+	assert.Equal(t, 1, tasks[0].ID)
+	assert.Equal(t, "Eat Dinner", tasks[0].Name)
+	assert.Equal(t, 0, tasks[0].Status)
+}
