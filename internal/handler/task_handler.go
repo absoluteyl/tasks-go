@@ -3,10 +3,19 @@ package handler
 import (
 	"encoding/json"
 	"github.com/absoluteyl/tasks-go/internal/model"
+	"github.com/absoluteyl/tasks-go/internal/service"
 	"net/http"
 )
 
-func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
+type TaskHandler struct {
+	taskService *service.TaskService
+}
+
+func NewTaskHandler(taskService *service.TaskService) *TaskHandler {
+	return &TaskHandler{taskService: taskService}
+}
+
+func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	var newTask model.Task
 	err := json.NewDecoder(r.Body).Decode(&newTask)
 	if err != nil {
@@ -30,7 +39,7 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetTasksHandler(w http.ResponseWriter, r *http.Request) {
+func (h *TaskHandler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 	// FIXME: Temporary fixed tasks
 	tasks := []model.Task{
 		{
