@@ -16,3 +16,12 @@ func NewTaskServiceWithRepository(taskRepository *repository.TaskRepository) *Ta
 func (s *TaskService) CreateTask(task *model.Task) (int, error) {
 	return s.taskRepository.CreateTask(task)
 }
+
+func (s *TaskService) GetTasks() ([]model.Task, error) {
+	tasks, err := s.taskRepository.GetTasks()
+	if err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}
