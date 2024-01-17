@@ -59,7 +59,7 @@ func TestCreateTaskHandler(t *testing.T) {
 }
 
 func TestGetTaskHandler(t *testing.T) {
-	req, err := http.NewRequest("Get", "/tasks/1", nil)
+	req, err := http.NewRequest("Get", "/tasks", nil)
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
 	}
