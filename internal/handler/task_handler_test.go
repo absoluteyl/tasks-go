@@ -18,7 +18,7 @@ func TestCreateTaskHandler(t *testing.T) {
 		t.Fatalf("Error marshaling JSON: %v", err)
 	}
 
-	req, err := http.NewRequest("POST", "/tasks/create", bytes.NewBuffer(taskJson))
+	req, err := http.NewRequest("POST", "/tasks", bytes.NewBuffer(taskJson))
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
 	}
