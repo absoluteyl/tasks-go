@@ -3,7 +3,9 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"github.com/absoluteyl/tasks-go/internal/model"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
@@ -49,5 +51,11 @@ func teardown() {
 }
 
 func TestCreateTask(t *testing.T) {
-	t.Skip("Skipping test for now")
+	task := &model.Task{
+		Name: "Eat Dinner",
+	}
+
+	taskID, err := taskRepo.CreateTask(task)
+	assert.NoError(t, err)
+	assert.NotZero(t, taskID)
 }
