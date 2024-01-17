@@ -19,3 +19,8 @@
 
 # Go workspace file
 go.work
+
+# Only include example db
+db/*
+!db/example.db
+
