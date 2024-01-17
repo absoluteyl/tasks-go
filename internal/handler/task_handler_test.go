@@ -56,3 +56,18 @@ func TestCreateTaskHandler(t *testing.T) {
 		t.Errorf("Unexpected task id in response: got %v, want %v", id, expectedID)
 	}
 }
+
+func TestGetTaskHandler(t *testing.T) {
+	req, err := http.NewRequest("Get", "/tasks/1", nil)
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+
+	rr := httptest.NewRecorder()
+	GetTaskHandler(rr, req)
+
+	expectedStatus := http.StatusOK
+	if status := rr.Code; status != expectedStatus {
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedStatus)
+	}
+}
