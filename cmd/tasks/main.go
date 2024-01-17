@@ -14,11 +14,16 @@ type Task struct {
 }
 
 func createTaskHandler(w http.ResponseWriter, r *http.Request) {
-	newTask := Task{
-		Name:   "Eat Dinner",
-		Status: 0,
-		ID:     1,
+	var newTask Task
+	err := json.NewDecoder(r.Body).Decode(&newTask)
+	if err != nil {
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
 	}
+
+	// FIXME: Temporary fixed status and id
+	newTask.ID = 1
+	newTask.Status = 0
 
 	response := map[string]interface{}{
 		"result": newTask,
@@ -26,7 +31,7 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	err := json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
