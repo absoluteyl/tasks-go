@@ -8,9 +8,9 @@ import (
 )
 
 type Task struct {
+	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	Status int    `json:"status"`
-	ID     int    `json:"id"`
 }
 
 func createTaskHandler(w http.ResponseWriter, r *http.Request) {
