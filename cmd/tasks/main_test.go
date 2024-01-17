@@ -36,8 +36,23 @@ func TestCreateTaskHandler(t *testing.T) {
 		t.Fatalf("Error unmarshaling JSON response: %v", err)
 	}
 
-	_, ok := response["result"]
+	result, ok := response["result"]
 	if !ok {
 		t.Error("Result field not found in response")
+	}
+
+	expectedName := taskData["name"].(string)
+	if name, ok := result["name"].(string); !ok || name != expectedName {
+		t.Errorf("Unexpected task name in response: got %v, want %v", name, expectedName)
+	}
+
+	expectedStatus := 0
+	if status, ok := result["status"].(float64); !ok || int(status) != expectedStatus {
+		t.Errorf("Unexpected task status in response: got %v, want %v", status, expectedStatus)
+	}
+
+	expectedID := 1
+	if id, ok := result["id"].(float64); !ok || int(id) != expectedID {
+		t.Errorf("Unexpected task id in response: got %v, want %v", id, expectedID)
 	}
 }
