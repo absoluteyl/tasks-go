@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"github.com/codegangsta/negroni"
 	"github.com/go-zoo/bone"
 	"net/http"
 )
 
 func createTaskHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, World!")
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 }
 
 func main() {
