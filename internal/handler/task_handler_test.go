@@ -59,6 +59,18 @@ func TestCreateTaskHandler(t *testing.T) {
 }
 
 func TestGetTaskHandler(t *testing.T) {
+	tasksData := []Task{
+		{
+			ID:     1,
+			Name:   "Eat Dinner",
+			Status: 0,
+		}, {
+			ID:     2,
+			Name:   "Go to sleep",
+			Status: 0,
+		},
+	}
+
 	req, err := http.NewRequest("Get", "/tasks", nil)
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
