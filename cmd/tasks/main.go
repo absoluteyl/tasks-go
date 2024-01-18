@@ -25,7 +25,7 @@ func main() {
 	taskHandler := handler.NewTaskHandler(taskService)
 
 	mux := bone.New()
-	mux.Post("/tasks", http.HandlerFunc(taskHandler.CreateTaskHandler))
+	mux.Post("/task", http.HandlerFunc(taskHandler.CreateTaskHandler))
 	mux.Get("/tasks", http.HandlerFunc(taskHandler.GetTasksHandler))
 
 	n := negroni.Classic()
