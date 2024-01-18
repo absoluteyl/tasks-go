@@ -29,3 +29,7 @@ func (s *TaskService) GetTasks() ([]model.Task, error) {
 func (s *TaskService) UpdateTask(task *model.Task) error {
 	return s.taskRepository.UpdateTask(task)
 }
+
+func (s *TaskService) DeleteTask(id int) error {
+	return s.taskRepository.DeleteTask(id)
+}
