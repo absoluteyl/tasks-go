@@ -26,6 +26,9 @@ func main() {
 	taskHandler := handler.NewTaskHandler(taskService)
 
 	mux := bone.New()
+
+	mux.Post("/auth", http.HandlerFunc(handler.CreateAuthHandler))
+
 	mux.Post("/task", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.CreateTaskHandler)))
 	mux.Get("/tasks", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.GetTasksHandler)))
 
