@@ -31,6 +31,7 @@ func main() {
 
 	mux.Post("/task", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.CreateTaskHandler)))
 	mux.Get("/tasks", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.GetTasksHandler)))
+	mux.Put("/task/", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.UpdateTaskHandler)))
 
 	n := negroni.Classic()
 	n.UseHandler(mux)
