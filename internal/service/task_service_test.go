@@ -48,7 +48,14 @@ func teardown() {
 	}
 }
 
-func TestCreateTask(t *testing.T) {
+func TestTaskService(t *testing.T) {
+	t.Run("CreateTask", testCreateTask)
+	t.Run("GetTasks", testGetTasks)
+	t.Run("UpdateTask", testUpdateTask)
+	t.Run("DeleteTask", testDeleteTask)
+}
+
+func testCreateTask(t *testing.T) {
 	task := &model.Task{
 		Name: "Eat Dinner",
 	}
@@ -58,7 +65,7 @@ func TestCreateTask(t *testing.T) {
 	assert.NotZero(t, taskID)
 }
 
-func TestGetTasks(t *testing.T) {
+func testGetTasks(t *testing.T) {
 	tasks, err := taskService.GetTasks()
 	assert.NoError(t, err)
 	assert.NotZero(t, len(tasks))
@@ -69,7 +76,7 @@ func TestGetTasks(t *testing.T) {
 	assert.Equal(t, 0, tasks[0].Status)
 }
 
-func TestUpdateTask(t *testing.T) {
+func testUpdateTask(t *testing.T) {
 	task := &model.Task{
 		ID:     1,
 		Name:   "Eat Lunch",
@@ -89,7 +96,7 @@ func TestUpdateTask(t *testing.T) {
 	assert.Equal(t, 1, tasks[0].Status)
 }
 
-func TestDeleteTask(t *testing.T) {
+func testDeleteTask(t *testing.T) {
 	err := taskService.DeleteTask(1)
 	assert.NoError(t, err)
 

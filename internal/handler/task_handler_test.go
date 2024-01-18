@@ -53,7 +53,14 @@ func teardown() {
 	}
 }
 
-func TestCreateTaskHandler(t *testing.T) {
+func TestTaskHandler(t *testing.T) {
+	t.Run("CreateTaskHandler", testCreateTaskHandler)
+	t.Run("GetTasksHandler", testGetTaskHandler)
+	t.Run("UpdateTaskHandler", testUpdateTaskHandler)
+	t.Run("DeleteTaskHandler", testDeleteTaskHandler)
+}
+
+func testCreateTaskHandler(t *testing.T) {
 	taskData := map[string]interface{}{
 		"name": "Eat Dinner",
 	}
@@ -103,7 +110,7 @@ func TestCreateTaskHandler(t *testing.T) {
 	}
 }
 
-func TestGetTaskHandler(t *testing.T) {
+func testGetTaskHandler(t *testing.T) {
 	tasksData := []model.Task{
 		{
 			ID:     1,
@@ -159,7 +166,7 @@ func TestGetTaskHandler(t *testing.T) {
 	}
 }
 
-func TestUpdateTaskHandler(t *testing.T) {
+func testUpdateTaskHandler(t *testing.T) {
 	taskData := model.Task{
 		ID:     1,
 		Name:   "Eat Lunch",
@@ -211,7 +218,7 @@ func TestUpdateTaskHandler(t *testing.T) {
 	}
 }
 
-func TestDeleteTaskHandler(t *testing.T) {
+func testDeleteTaskHandler(t *testing.T) {
 	req, err := http.NewRequest("DELETE", "/task/1", nil)
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
