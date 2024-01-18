@@ -10,6 +10,7 @@ import (
 	"github.com/absoluteyl/tasks-go/internal/service"
 	"github.com/absoluteyl/tasks-go/testutils"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -79,9 +80,7 @@ func testCreateTaskHandler(t *testing.T) {
 	taskHandler.CreateTaskHandler(rr, req)
 
 	expectedHTTPStatus := http.StatusCreated
-	if status := rr.Code; status != expectedHTTPStatus {
-		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedHTTPStatus)
-	}
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 
 	var response map[string]map[string]interface{}
 	err = json.Unmarshal(rr.Body.Bytes(), &response)
@@ -90,24 +89,15 @@ func testCreateTaskHandler(t *testing.T) {
 	}
 
 	result, ok := response["result"]
-	if !ok {
-		t.Error("Result field not found in response")
-	}
-
-	expectedName := taskData["name"].(string)
-	if name, ok := result["name"].(string); !ok || name != expectedName {
-		t.Errorf("Unexpected task name in response: got %v, want %v", name, expectedName)
-	}
-
-	expectedStatus := 0
-	if status, ok := result["status"].(float64); !ok || int(status) != expectedStatus {
-		t.Errorf("Unexpected task status in response: got %v, want %v", status, expectedStatus)
-	}
+	assert.Truef(t, ok, "Result field not found in response")
 
 	expectedID := 1
-	if id, ok := result["id"].(float64); !ok || int(id) != expectedID {
-		t.Errorf("Unexpected task id in response: got %v, want %v", id, expectedID)
-	}
+	expectedName := taskData["name"].(string)
+	expectedStatus := 0
+
+	assert.Equal(t, expectedID, int(result["id"].(float64)), "Unexpected task id in response")
+	assert.Equal(t, expectedName, result["name"], "Unexpected task name in response")
+	assert.Equal(t, expectedStatus, int(result["status"].(float64)), "Unexpected task status in response")
 }
 
 func testGetTaskHandler(t *testing.T) {
@@ -128,9 +118,7 @@ func testGetTaskHandler(t *testing.T) {
 	taskHandler.GetTasksHandler(rr, req)
 
 	expectedHTTPStatus := http.StatusOK
-	if status := rr.Code; status != expectedHTTPStatus {
-		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedHTTPStatus)
-	}
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 
 	var response map[string][]map[string]interface{}
 	err = json.Unmarshal(rr.Body.Bytes(), &response)
@@ -139,30 +127,21 @@ func testGetTaskHandler(t *testing.T) {
 	}
 
 	result, ok := response["result"]
-	if !ok {
-		t.Error("Result field not found in response")
-	}
+	assert.True(t, ok, "Result field not found in response")
 
 	expectedLength := len(tasksData)
-	if len(result) != expectedLength {
-		t.Errorf("Unexpected task length in response: got %v, want %v", len(result), expectedLength)
-	}
+	assert.Equal(t, expectedLength, len(result), "Unexpected task length in response")
 
 	for i, task := range tasksData {
-		expectedName := task.Name
-		if name, ok := result[i]["name"].(string); !ok || name != expectedName {
-			t.Errorf("Unexpected task name in response: got %v, want %v", name, expectedName)
-		}
-
-		expectedStatus := task.Status
-		if status, ok := result[i]["status"].(float64); !ok || int(status) != expectedStatus {
-			t.Errorf("Unexpected task status in response: got %v, want %v", status, expectedStatus)
-		}
 
 		expectedID := task.ID
-		if id, ok := result[i]["id"].(float64); !ok || int(id) != expectedID {
-			t.Errorf("Unexpected task id in response: got %v, want %v", id, expectedID)
-		}
+		expectedName := task.Name
+		expectedStatus := task.Status
+
+		assert.Equal(t, expectedID, int(result[i]["id"].(float64)), "Unexpected task id in response")
+		assert.Equal(t, expectedName, result[i]["name"], "Unexpected task name in response")
+		assert.Equal(t, expectedStatus, int(result[i]["status"].(float64)), "Unexpected task status in response")
+
 	}
 }
 
@@ -187,9 +166,7 @@ func testUpdateTaskHandler(t *testing.T) {
 	taskHandler.UpdateTaskHandler(rr, req)
 
 	expectedHTTPStatus := http.StatusOK
-	if status := rr.Code; status != expectedHTTPStatus {
-		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedHTTPStatus)
-	}
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 
 	var response map[string]map[string]interface{}
 	err = json.Unmarshal(rr.Body.Bytes(), &response)
@@ -198,24 +175,14 @@ func testUpdateTaskHandler(t *testing.T) {
 	}
 
 	result, ok := response["result"]
-	if !ok {
-		t.Error("Result field not found in response")
-	}
-
-	expectedName := taskData.Name
-	if name, ok := result["name"].(string); !ok || name != expectedName {
-		t.Errorf("Unexpected task name in response: got %v, want %v", name, expectedName)
-	}
-
-	expectedStatus := taskData.Status
-	if status, ok := result["status"].(float64); !ok || int(status) != expectedStatus {
-		t.Errorf("Unexpected task status in response: got %v, want %v", status, expectedStatus)
-	}
+	assert.Truef(t, ok, "Result field not found in response")
 
 	expectedID := taskData.ID
-	if id, ok := result["id"].(float64); !ok || int(id) != expectedID {
-		t.Errorf("Unexpected task id in response: got %v, want %v", id, expectedID)
-	}
+	expectedName := taskData.Name
+	expectedStatus := taskData.Status
+	assert.Equal(t, expectedID, int(result["id"].(float64)), "Unexpected task id in response")
+	assert.Equal(t, expectedName, result["name"], "Unexpected task name in response")
+	assert.Equal(t, expectedStatus, int(result["status"].(float64)), "Unexpected task status in response")
 }
 
 func testDeleteTaskHandler(t *testing.T) {
@@ -228,7 +195,5 @@ func testDeleteTaskHandler(t *testing.T) {
 	taskHandler.DeleteTaskHandler(rr, req)
 
 	expectedHTTPStatus := http.StatusOK
-	if status := rr.Code; status != expectedHTTPStatus {
-		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedHTTPStatus)
-	}
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 }

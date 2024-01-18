@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,16 +28,11 @@ func testNoHeader(t *testing.T) {
 
 	jwtHandler.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusUnauthorized)
-	}
+	expectedHTTPStatus := http.StatusUnauthorized
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 
 	expected := "Authorization header is missing or not in 'Bearer {token}' format\n"
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
+	assert.Equal(t, expected, rr.Body.String(), "Handler returned unexpected body")
 }
 
 func testHeaderInvalid(t *testing.T) {
@@ -53,16 +49,11 @@ func testHeaderInvalid(t *testing.T) {
 
 	jwtHandler.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusUnauthorized)
-	}
+	expectedHTTPStatus := http.StatusUnauthorized
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 
 	expected := "Authorization header is missing or not in 'Bearer {token}' format\n"
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
+	assert.Equal(t, expected, rr.Body.String(), "Handler returned unexpected body")
 }
 
 func testTokenInvalid(t *testing.T) {
@@ -79,16 +70,11 @@ func testTokenInvalid(t *testing.T) {
 
 	jwtHandler.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusUnauthorized)
-	}
+	expectedHTTPStatus := http.StatusUnauthorized
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 
 	expected := "Invalid or expired token\n"
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
+	assert.Equal(t, expected, rr.Body.String(), "Handler returned unexpected body")
 }
 
 func testTokenOlderThan1Minute(t *testing.T) {
@@ -112,14 +98,10 @@ func testTokenOlderThan1Minute(t *testing.T) {
 
 	jwtHandler.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusUnauthorized {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusUnauthorized)
-	}
+	expectedHTTPStatus := http.StatusUnauthorized
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 
 	expected := "Token is older than 1 minute\n"
-	if rr.Body.String() != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), expected)
-	}
+	assert.Equal(t, expected, rr.Body.String(), "Handler returned unexpected body")
+
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -17,9 +18,7 @@ func TestCreateAuthHandler(t *testing.T) {
 	CreateAuthHandler(rr, req)
 
 	expectedHTTPStatus := http.StatusOK
-	if status := rr.Code; status != expectedHTTPStatus {
-		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedHTTPStatus)
-	}
+	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
 
 	var response map[string]interface{}
 	err = json.Unmarshal(rr.Body.Bytes(), &response)
@@ -28,12 +27,8 @@ func TestCreateAuthHandler(t *testing.T) {
 	}
 
 	token, ok := response["token"]
-	if !ok {
-		t.Error("Token field not found in response")
-	}
+	assert.Truef(t, ok, "Token field not found in response")
 
 	_, ok = token.(string)
-	if !ok {
-		t.Error("Token field is not a string")
-	}
+	assert.Truef(t, ok, "Token field is not a string")
 }
