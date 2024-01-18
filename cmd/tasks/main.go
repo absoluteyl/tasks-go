@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"github.com/absoluteyl/tasks-go/internal/handler"
+	"github.com/absoluteyl/tasks-go/internal/pkg/middleware"
 	"github.com/absoluteyl/tasks-go/internal/repository"
 	"github.com/absoluteyl/tasks-go/internal/service"
 	"github.com/codegangsta/negroni"
@@ -25,8 +26,8 @@ func main() {
 	taskHandler := handler.NewTaskHandler(taskService)
 
 	mux := bone.New()
-	mux.Post("/task", http.HandlerFunc(taskHandler.CreateTaskHandler))
-	mux.Get("/tasks", http.HandlerFunc(taskHandler.GetTasksHandler))
+	mux.Post("/task", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.CreateTaskHandler)))
+	mux.Get("/tasks", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.GetTasksHandler)))
 
 	n := negroni.Classic()
 	n.UseHandler(mux)
