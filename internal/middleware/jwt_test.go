@@ -8,7 +8,14 @@ import (
 	"time"
 )
 
-func TestJWTMiddleware_NoHeader(t *testing.T) {
+func TestJWTMiddleware(t *testing.T) {
+	t.Run("NoHeader", testNoHeader)
+	t.Run("HeaderInvalid", testHeaderInvalid)
+	t.Run("TokenInvalid", testTokenInvalid)
+	t.Run("TokenOlderThan1Minute", testTokenOlderThan1Minute)
+}
+
+func testNoHeader(t *testing.T) {
 	req, err := http.NewRequest("GET", "/tasks", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -32,7 +39,7 @@ func TestJWTMiddleware_NoHeader(t *testing.T) {
 	}
 }
 
-func TestJWTMiddleware_HeaderInvalid(t *testing.T) {
+func testHeaderInvalid(t *testing.T) {
 	req, err := http.NewRequest("GET", "/tasks", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -58,7 +65,7 @@ func TestJWTMiddleware_HeaderInvalid(t *testing.T) {
 	}
 }
 
-func TestJWTMiddleware_TokenInvalid(t *testing.T) {
+func testTokenInvalid(t *testing.T) {
 	req, err := http.NewRequest("GET", "/tasks", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -84,7 +91,7 @@ func TestJWTMiddleware_TokenInvalid(t *testing.T) {
 	}
 }
 
-func TestJWTMiddleware_TokenOlderThan1Minute(t *testing.T) {
+func testTokenOlderThan1Minute(t *testing.T) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["iat"] = time.Now().Add(-2 * time.Minute).Unix()
