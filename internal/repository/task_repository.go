@@ -52,3 +52,15 @@ func (r *TaskRepository) GetTasks() ([]model.Task, error) {
 
 	return tasks, nil
 }
+
+func (r *TaskRepository) UpdateTask(task *model.Task) error {
+	updateTaskSQL := `
+	UPDATE tasks SET name = ?, status = ? WHERE id = ?
+	`
+	_, err := r.db.Exec(updateTaskSQL, task.Name, task.Status, task.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
