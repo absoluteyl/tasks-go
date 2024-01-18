@@ -62,3 +62,28 @@ func (h *TaskHandler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
+
+func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	var targetTask model.Task
+	err := json.NewDecoder(r.Body).Decode(&targetTask)
+	if err != nil {
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	err = h.taskService.UpdateTask(&targetTask)
+	if err != nil {
+		http.Error(w, "Error updating task", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"result": targetTask,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
