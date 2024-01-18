@@ -8,9 +8,7 @@ RUN apk --no-cache add make git gcc libtool musl-dev ca-certificates dumb-init
 
 WORKDIR /app
 
-COPY go.mod ./
-COPY cmd/ ./cmd/
-COPY internal/ ./internal/
+COPY . .
 COPY db/example.db ./db/tasks.db
 
 RUN go mod download
