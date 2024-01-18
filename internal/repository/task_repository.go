@@ -64,3 +64,15 @@ func (r *TaskRepository) UpdateTask(task *model.Task) error {
 
 	return nil
 }
+
+func (r *TaskRepository) DeleteTask(id int) error {
+	deleteTaskSQL := `
+	DELETE FROM tasks WHERE id = ?
+	`
+	_, err := r.db.Exec(deleteTaskSQL, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
