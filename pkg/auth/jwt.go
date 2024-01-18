@@ -18,3 +18,9 @@ func GenerateToken() (string, error) {
 
 	return tokenString, nil
 }
+
+func ParseToken(tokenString string) (*jwt.Token, error) {
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+}
