@@ -18,3 +18,14 @@
     ```bash
     curl -X POST -H "Content-Type: application/json" -d '{"name":"Add more tasks"}' http://localhost:8080/tasks
     ```
+
+4. Stop the container
+
+    ```bash
+    $ docker ps
+    CONTAINER ID   IMAGE             COMMAND      CREATED         STATUS         PORTS                    NAMES
+    b17486cbd255   tasks-go:latest   "./server"   3 minutes ago   Up 3 minutes   0.0.0.0:8080->8080/tcp   condescending_sammet
+   
+    # docker stop using CONTAINER ID
+    $ docker stop b17486cbd255
+    ```
