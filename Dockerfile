@@ -11,7 +11,7 @@ COPY db/example.db ./db/tasks.db
 
 RUN go mod download
 RUN go mod tidy
-RUN go build -o server ./cmd/tasks
+RUN go build -o server ./cmd/tasks/
 
 EXPOSE 8080
 
