@@ -29,7 +29,7 @@ func TestCreateAuthHandler(t *testing.T) {
 
 	token, ok := response["token"]
 	if !ok {
-		t.Error("Result field not found in response")
+		t.Error("Token field not found in response")
 	}
 
 	_, ok = token.(string)
