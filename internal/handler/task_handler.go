@@ -5,6 +5,8 @@ import (
 	"github.com/absoluteyl/tasks-go/internal/model"
 	"github.com/absoluteyl/tasks-go/internal/service"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type TaskHandler struct {
@@ -85,5 +87,20 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func (h *TaskHandler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
+	id := strings.TrimPrefix(r.URL.Path, "/task/")
+	if id == "" {
+		http.Error(w, "Missing task ID", http.StatusBadRequest)
+		return
+	}
+
+	taskID, err := strconv.Atoi(id)
+	err = h.taskService.DeleteTask(taskID)
+	if err != nil {
+		http.Error(w, "Error deleting task", http.StatusInternalServerError)
+		return
 	}
 }
