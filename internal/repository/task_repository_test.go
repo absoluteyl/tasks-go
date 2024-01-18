@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/absoluteyl/tasks-go/internal/model"
+	"github.com/absoluteyl/tasks-go/testutils"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -14,30 +15,23 @@ var testDB *sql.DB
 var taskRepo *TaskRepository
 
 func TestMain(m *testing.M) {
-	setup()
+	t := &testing.T{}
+	setup(t)
 	code := m.Run()
 	teardown()
 	os.Exit(code)
 }
 
-func setup() {
-	db, err := sql.Open("sqlite3", "test.db")
+func setup(t *testing.T) {
+	var err error
+	testDB, err = testutils.ConnectDB()
 	if err != nil {
-		fmt.Printf("Error opening test database: %v", err)
-		os.Exit(1)
+		t.Fatal(err)
 	}
-	testDB = db
 
-	createTableSQL := `
-	CREATE TABLE IF NOT EXISTS tasks (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT,
-		status INTEGER DEFAULT 0
-	);`
-	_, err = testDB.Exec(createTableSQL)
+	err = testutils.PrepareTaskTable(testDB)
 	if err != nil {
-		fmt.Printf("Error creating tasks table: %v", err)
-		os.Exit(1)
+		t.Fatal(err)
 	}
 
 	taskRepo = NewTaskRepository(testDB)
