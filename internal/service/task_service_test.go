@@ -94,3 +94,12 @@ func TestUpdateTask(t *testing.T) {
 	assert.Equal(t, "Eat Lunch", tasks[0].Name)
 	assert.Equal(t, 1, tasks[0].Status)
 }
+
+func TestDeleteTask(t *testing.T) {
+	err := taskService.DeleteTask(1)
+	assert.NoError(t, err)
+
+	tasks, err := taskService.GetTasks()
+	assert.NoError(t, err)
+	assert.Zero(t, len(tasks))
+}
