@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/absoluteyl/tasks-go/pkg/auth"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strings"
@@ -18,14 +19,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, jwt.NewValidationError("Unexpected signing method", jwt.ValidationErrorSignatureInvalid)
-			}
-
-			return []byte("secret"), nil
-		})
-
+		token, err := auth.ParseToken(tokenString)
 		if err != nil || !token.Valid {
 			http.Error(w, "Invalid or expired token", http.StatusUnauthorized)
 			return
