@@ -216,3 +216,18 @@ func TestUpdateTaskHandler(t *testing.T) {
 		t.Errorf("Unexpected task id in response: got %v, want %v", id, expectedID)
 	}
 }
+
+func TestDeleteTaskHandler(t *testing.T) {
+	req, err := http.NewRequest("DELETE", "/task/1", nil)
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+
+	rr := httptest.NewRecorder()
+	taskHandler.DeleteTaskHandler(rr, req)
+
+	expectedHTTPStatus := http.StatusOK
+	if status := rr.Code; status != expectedHTTPStatus {
+		t.Errorf("Handler returned wrong status code: got %v, want %v", status, expectedHTTPStatus)
+	}
+}
