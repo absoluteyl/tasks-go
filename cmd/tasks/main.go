@@ -3,7 +3,7 @@ package main
 import (
 	"database/sql"
 	"github.com/absoluteyl/tasks-go/internal/handler"
-	"github.com/absoluteyl/tasks-go/internal/pkg/middleware"
+	"github.com/absoluteyl/tasks-go/internal/middleware"
 	"github.com/absoluteyl/tasks-go/internal/repository"
 	"github.com/absoluteyl/tasks-go/internal/service"
 	"github.com/codegangsta/negroni"
