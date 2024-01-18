@@ -2,6 +2,10 @@
 FROM golang:1.21-alpine
 LABEL authors="Elsa Lau"
 
+# sqlite needs cgo
+ENV CGO_ENABLED=1
+RUN apk --no-cache add make git gcc libtool musl-dev ca-certificates dumb-init
+
 WORKDIR /app
 
 COPY go.mod ./
