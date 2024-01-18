@@ -45,3 +45,15 @@ func TestGenerateToken(t *testing.T) {
 		t.Fatal("Invalid issued at claim")
 	}
 }
+
+func TestParseToken(t *testing.T) {
+	tokenString, err := GenerateToken()
+	if err != nil {
+		t.Fatalf("Failed to generate token: %v", err)
+	}
+
+	_, err = ParseToken(tokenString)
+	if err != nil {
+		t.Fatalf("Failed to parse token: %v", err)
+	}
+}
