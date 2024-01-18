@@ -90,3 +90,12 @@ func TestUpdateTask(t *testing.T) {
 	assert.Equal(t, "Eat Lunch", tasks[0].Name)
 	assert.Equal(t, 1, tasks[0].Status)
 }
+
+func TestDeleteTask(t *testing.T) {
+	err := taskRepo.DeleteTask(1)
+	assert.NoError(t, err)
+
+	tasks, err := taskRepo.GetTasks()
+	assert.NoError(t, err)
+	assert.Empty(t, tasks)
+}
