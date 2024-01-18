@@ -74,3 +74,23 @@ func TestGetTasks(t *testing.T) {
 	assert.Equal(t, "Eat Dinner", tasks[0].Name)
 	assert.Equal(t, 0, tasks[0].Status)
 }
+
+func TestUpdateTask(t *testing.T) {
+	task := &model.Task{
+		ID:     1,
+		Name:   "Eat Lunch",
+		Status: 1,
+	}
+
+	err := taskService.UpdateTask(task)
+	assert.NoError(t, err)
+
+	tasks, err := taskService.GetTasks()
+	assert.NoError(t, err)
+	assert.NotZero(t, len(tasks))
+	assert.Len(t, tasks, 1)
+
+	assert.Equal(t, 1, tasks[0].ID)
+	assert.Equal(t, "Eat Lunch", tasks[0].Name)
+	assert.Equal(t, 1, tasks[0].Status)
+}
