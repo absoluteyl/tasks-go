@@ -3,6 +3,7 @@ package testutils
 import (
 	"database/sql"
 	"fmt"
+	"os"
 )
 
 func ConnectDB() (*sql.DB, error) {
@@ -25,6 +26,15 @@ func PrepareTaskTable(db *sql.DB) error {
 	_, err := db.Exec(createTableSQL)
 	if err != nil {
 		return fmt.Errorf("Error creating tasks table: %v", err)
+	}
+
+	return nil
+}
+
+func RemoveDB() error {
+	err := os.Remove("test.db")
+	if err != nil {
+		return fmt.Errorf("Error removing test database: %v", err)
 	}
 
 	return nil

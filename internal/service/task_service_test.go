@@ -42,9 +42,9 @@ func setup(t *testing.T) {
 }
 
 func teardown() {
-	err := os.Remove("test.db")
+	err := testutils.RemoveDB()
 	if err != nil {
-		fmt.Printf("Error removing test database: %v", err)
+		fmt.Print(err)
 	}
 }
 
