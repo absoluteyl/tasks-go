@@ -25,3 +25,7 @@ func (s *TaskService) GetTasks() ([]model.Task, error) {
 
 	return tasks, nil
 }
+
+func (s *TaskService) UpdateTask(task *model.Task) error {
+	return s.taskRepository.UpdateTask(task)
+}
