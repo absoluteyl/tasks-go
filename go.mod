@@ -4,6 +4,7 @@ go 1.21.0
 
 require (
 	github.com/codegangsta/negroni v1.0.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-zoo/bone v1.3.0
 	github.com/mattn/go-sqlite3 v1.14.19
 	github.com/stretchr/testify v1.8.4
