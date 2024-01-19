@@ -3,7 +3,7 @@ package service
 import (
 	"database/sql"
 	"fmt"
-	"github.com/absoluteyl/tasks-go/testutils"
+	"github.com/absoluteyl/tasks-go/pkg/testutils"
 	"os"
 	"testing"
 

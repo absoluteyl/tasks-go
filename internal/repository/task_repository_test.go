@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/absoluteyl/tasks-go/internal/model"
-	"github.com/absoluteyl/tasks-go/testutils"
+	"github.com/absoluteyl/tasks-go/pkg/testutils"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"os"
