@@ -3,7 +3,6 @@ package handler
 import (
 	"bytes"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"github.com/absoluteyl/tasks-go/internal/model"
 	"github.com/absoluteyl/tasks-go/internal/repository"
@@ -73,7 +72,7 @@ func TestTaskHandler(t *testing.T) {
 func testCreateMissingName(t *testing.T) {
 	taskData := map[string]interface{}{}
 
-	reqBody := prepareJsonBody(t, taskData)
+	reqBody := PrepareJsonBody(t, taskData)
 
 	req := prepareCreateTaskRequest(t, reqBody)
 
@@ -91,7 +90,7 @@ func testCreate(t *testing.T) {
 		"name": "Eat Dinner",
 	}
 
-	reqBody := prepareJsonBody(t, taskData)
+	reqBody := PrepareJsonBody(t, taskData)
 
 	req := prepareCreateTaskRequest(t, reqBody)
 
@@ -100,7 +99,7 @@ func testCreate(t *testing.T) {
 
 	HttpStatusShouldBe(t, rr, http.StatusCreated)
 
-	response := parseMapMapResponse(t, rr)
+	response := ParseMapMapResponse(t, rr)
 
 	result, ok := response["result"]
 	assert.True(t, ok, "Result field not found in response")
@@ -132,7 +131,7 @@ func testGetList(t *testing.T) {
 
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 
-	response := parseMapArrayResponse(t, rr)
+	response := ParseMapArrayResponse(t, rr)
 
 	result, ok := response["result"]
 	assert.True(t, ok, "Result field not found in response")
@@ -155,7 +154,7 @@ func testUpdateWithoutID(t *testing.T) {
 		"status": 1,
 	}
 
-	reqBody := prepareJsonBody(t, taskData)
+	reqBody := PrepareJsonBody(t, taskData)
 
 	req, err := http.NewRequest("PUT", "/task/", bytes.NewBuffer(reqBody))
 	if err != nil {
@@ -178,7 +177,7 @@ func testUpdateWithInvalidID(t *testing.T) {
 		"status": 1,
 	}
 
-	reqBody := prepareJsonBody(t, taskData)
+	reqBody := PrepareJsonBody(t, taskData)
 
 	req, err := http.NewRequest("PUT", "/task/invalid", bytes.NewBuffer(reqBody))
 	if err != nil {
@@ -200,7 +199,7 @@ func testUpdateWithIDInBody(t *testing.T) {
 		"id": 1,
 	}
 
-	reqBody := prepareJsonBody(t, taskData)
+	reqBody := PrepareJsonBody(t, taskData)
 
 	req := prepareUpdateTaskRequest(t, taskData["id"].(int), reqBody)
 
@@ -220,7 +219,7 @@ func testUpdateNotExist(t *testing.T) {
 		"status": 1,
 	}
 
-	reqBody := prepareJsonBody(t, taskData)
+	reqBody := PrepareJsonBody(t, taskData)
 
 	req := prepareUpdateTaskRequest(t, 2, reqBody)
 
@@ -236,7 +235,7 @@ func testUpdate(t *testing.T) {
 		"status": 1,
 	}
 
-	reqBody := prepareJsonBody(t, taskData)
+	reqBody := PrepareJsonBody(t, taskData)
 
 	req := prepareUpdateTaskRequest(t, 1, reqBody)
 
@@ -245,7 +244,7 @@ func testUpdate(t *testing.T) {
 
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 
-	response := parseMapMapResponse(t, rr)
+	response := ParseMapMapResponse(t, rr)
 
 	result, ok := response["result"]
 	assert.True(t, ok, "Result field not found in response")
@@ -277,14 +276,6 @@ func testDelete(t *testing.T) {
 	taskHandler.DeleteTaskHandler(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusOK)
-}
-
-func prepareJsonBody(t *testing.T, data map[string]interface{}) []byte {
-	body, err := json.Marshal(data)
-	if err != nil {
-		t.Fatalf("Error marshaling JSON: %v", err)
-	}
-	return body
 }
 
 func prepareDeleteTaskRequest(t *testing.T, id int) *http.Request {
@@ -319,24 +310,6 @@ func prepareUpdateTaskRequest(t *testing.T, id int, body []byte) *http.Request {
 		t.Fatalf("Error creating request: %v", err)
 	}
 	return req
-}
-
-func parseMapArrayResponse(t *testing.T, rr *httptest.ResponseRecorder) map[string][]map[string]interface{} {
-	var response map[string][]map[string]interface{}
-	err := json.Unmarshal(rr.Body.Bytes(), &response)
-	if err != nil {
-		t.Fatalf("Error unmarshalling JSON response: %v", err)
-	}
-	return response
-}
-
-func parseMapMapResponse(t *testing.T, rr *httptest.ResponseRecorder) map[string]map[string]interface{} {
-	var response map[string]map[string]interface{}
-	err := json.Unmarshal(rr.Body.Bytes(), &response)
-	if err != nil {
-		t.Fatalf("Error unmarshaling JSON response: %v", err)
-	}
-	return response
 }
 
 func taskShouldBe(t *testing.T, expectedTask model.Task, actualTask model.Task) {
