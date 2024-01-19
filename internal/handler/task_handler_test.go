@@ -82,6 +82,7 @@ func testCreateMissingName(t *testing.T) {
 
 	response := ParseResponse(t, rr)
 	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldBe(t, "Missing name attribute in request body", response["result"])
 }
 
 func testCreate(t *testing.T) {
@@ -226,6 +227,10 @@ func testUpdateNotExist(t *testing.T) {
 	taskHandler.UpdateTaskHandler(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusNotFound)
+
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldBe(t, "Task not found", response["result"])
 }
 
 func testUpdate(t *testing.T) {
@@ -264,6 +269,10 @@ func testDeleteNotExist(t *testing.T) {
 	taskHandler.DeleteTaskHandler(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusNotFound)
+
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldBe(t, "Task not found", response["result"])
 }
 
 func testDelete(t *testing.T) {
