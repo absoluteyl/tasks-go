@@ -10,12 +10,16 @@ import (
 	"github.com/go-zoo/bone"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var dbDriver = os.Getenv("DB_DRIVER")
+var dbPath = os.Getenv("DB_PATH")
+
 func main() {
-	db := connectDB("sqlite3", "./db/tasks.db")
+	db := connectDB(dbDriver, dbPath)
 	defer db.Close()
 
 	mux := setupRouter(db)
