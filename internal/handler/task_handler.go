@@ -18,14 +18,14 @@ func NewTaskHandler(taskService *service.TaskService) *TaskHandler {
 }
 
 func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
-	var newTask model.Task
-	err := json.NewDecoder(r.Body).Decode(&newTask)
+	var taskData map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&taskData)
 	if err != nil {
-		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	createdTaskID, err := h.taskService.CreateTask(&newTask)
+	createdTaskID, err := h.taskService.CreateTask(taskData["name"].(string))
 	if err != nil {
 		http.Error(w, "Error creating task", http.StatusInternalServerError)
 		return
