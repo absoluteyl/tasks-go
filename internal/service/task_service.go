@@ -33,3 +33,7 @@ func (s *TaskService) UpdateTask(task *model.Task) error {
 func (s *TaskService) DeleteTask(id int) error {
 	return s.taskRepository.DeleteTask(id)
 }
+
+func (s *TaskService) GetTaskByID(id int) (model.Task, error) {
+	return s.taskRepository.GetTaskByID(id)
+}

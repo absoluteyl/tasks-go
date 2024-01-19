@@ -31,11 +31,13 @@ func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	newTask, err := h.taskService.GetTaskByID(createdTaskID)
+
 	response := map[string]interface{}{
 		"result": map[string]interface{}{
-			"id":     createdTaskID,
+			"id":     newTask.ID,
 			"name":   newTask.Name,
-			"status": 0, // FIXME: Temporary fixed status
+			"status": newTask.Status,
 		},
 	}
 

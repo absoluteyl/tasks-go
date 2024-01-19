@@ -76,3 +76,18 @@ func (r *TaskRepository) DeleteTask(id int) error {
 
 	return nil
 }
+
+func (r *TaskRepository) GetTaskByID(id int) (model.Task, error) {
+	getTaskByIDSQL := `
+	SELECT id, name, status FROM tasks WHERE id = ?
+	`
+	row := r.db.QueryRow(getTaskByIDSQL, id)
+
+	var task model.Task
+	err := row.Scan(&task.ID, &task.Name, &task.Status)
+	if err != nil {
+		return model.Task{}, err
+	}
+
+	return task, nil
+}
