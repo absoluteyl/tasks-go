@@ -80,14 +80,13 @@ func testUpdateTask(t *testing.T) {
 	err := taskRepo.UpdateTask(task)
 	assert.NoError(t, err)
 
-	tasks, err := taskRepo.GetTasks()
+	updatedTask, err := taskRepo.GetTaskByID(task.ID)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, tasks)
-	assert.Len(t, tasks, 1)
+	assert.NotEmpty(t, updatedTask)
 
-	assert.Equal(t, 1, tasks[0].ID)
-	assert.Equal(t, "Eat Lunch", tasks[0].Name)
-	assert.Equal(t, 1, tasks[0].Status)
+	assert.Equal(t, 1, updatedTask.ID)
+	assert.Equal(t, "Eat Lunch", updatedTask.Name)
+	assert.Equal(t, 1, updatedTask.Status)
 }
 
 func testDeleteTask(t *testing.T) {
