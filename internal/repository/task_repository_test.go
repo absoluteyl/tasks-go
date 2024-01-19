@@ -13,6 +13,7 @@ import (
 
 var testDB *sql.DB
 var taskRepo *TaskRepository
+
 var taskData = model.Task{
 	ID:     1,
 	Name:   "Eat Dinner",
