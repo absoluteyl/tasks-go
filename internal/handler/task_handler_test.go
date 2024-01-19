@@ -63,6 +63,8 @@ func TestTaskHandler(t *testing.T) {
 	t.Run("UpdateWithoutID", testUpdateWithInvalidID)
 	t.Run("UpdateWithIDInBody", testUpdateWithIDInBody)
 	t.Run("UpdateNotExist", testUpdateNotExist)
+	t.Run("UpdateOnlyName", testUpdateOnlyName)
+	t.Run("UpdateOnlyStatus", testUpdateOnlyStatus)
 	t.Run("Update", testUpdate)
 
 	t.Run("DeleteNotExist", testDeleteNotExist)
@@ -226,9 +228,65 @@ func testUpdateNotExist(t *testing.T) {
 	ResultShouldBe(t, "Task not found", response["result"])
 }
 
+func testUpdateOnlyName(t *testing.T) {
+	taskData := map[string]interface{}{
+		"name": "Eat Lunch",
+	}
+
+	reqBody := PrepareJsonBody(t, taskData)
+	req := prepareUpdateTaskRequest(t, 1, reqBody)
+
+	rr := httptest.NewRecorder()
+	taskHandler.UpdateTaskHandler(rr, req)
+
+	HttpStatusShouldBe(t, rr, http.StatusOK)
+
+	response := ParseResponse(t, rr)
+	ResultShouldExist(t, response)
+
+	result := response["result"].(map[string]interface{})
+	taskShouldBe(t, model.Task{
+		ID:     1,
+		Name:   taskData["name"].(string),
+		Status: 0,
+	}, model.Task{
+		ID:     int(result["id"].(float64)),
+		Name:   result["name"].(string),
+		Status: int(result["status"].(float64)),
+	})
+}
+
+func testUpdateOnlyStatus(t *testing.T) {
+	taskData := map[string]interface{}{
+		"status": 1,
+	}
+
+	reqBody := PrepareJsonBody(t, taskData)
+	req := prepareUpdateTaskRequest(t, 1, reqBody)
+
+	rr := httptest.NewRecorder()
+	taskHandler.UpdateTaskHandler(rr, req)
+
+	HttpStatusShouldBe(t, rr, http.StatusOK)
+
+	response := ParseResponse(t, rr)
+	ResultShouldExist(t, response)
+
+	result := response["result"].(map[string]interface{})
+	taskShouldBe(t, model.Task{
+		ID:     1,
+		Name:   "Eat Lunch",
+		Status: taskData["status"].(int),
+	}, model.Task{
+		ID:     int(result["id"].(float64)),
+		Name:   result["name"].(string),
+		Status: int(result["status"].(float64)),
+	})
+}
+
 func testUpdate(t *testing.T) {
 	taskData := map[string]interface{}{
-		"name":   "Eat Lunch",
+		"name":   "Eat Breakfast",
 		"status": 1,
 	}
 
