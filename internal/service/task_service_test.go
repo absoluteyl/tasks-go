@@ -87,21 +87,20 @@ func testUpdate(t *testing.T) {
 	err := taskService.UpdateTask(&taskData)
 	assert.NoError(t, err)
 
-	tasks, err := taskService.GetTasks()
+	updatedTask, err := taskService.GetTaskByID(taskData.ID)
 	assert.NoError(t, err)
-	assert.NotZero(t, len(tasks))
-	assert.Len(t, tasks, 1)
+	assert.NotEmpty(t, updatedTask)
 
-	assert.Equal(t, taskData.ID, tasks[0].ID)
-	assert.Equal(t, taskData.Name, tasks[0].Name)
-	assert.Equal(t, taskData.Status, tasks[0].Status)
+	assert.Equal(t, taskData.ID, updatedTask.ID)
+	assert.Equal(t, taskData.Name, updatedTask.Name)
+	assert.Equal(t, taskData.Status, updatedTask.Status)
 }
 
 func testDelete(t *testing.T) {
 	err := taskService.DeleteTask(taskData.ID)
 	assert.NoError(t, err)
 
-	tasks, err := taskService.GetTasks()
-	assert.NoError(t, err)
-	assert.Zero(t, len(tasks))
+	_, err = taskService.GetTaskByID(taskData.ID)
+	assert.Error(t, err)
+	assert.Equal(t, sql.ErrNoRows, err)
 }
