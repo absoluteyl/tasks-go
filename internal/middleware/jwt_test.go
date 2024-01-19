@@ -23,7 +23,7 @@ func testNoHeader(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	HttpResponseShouldBe(t, rr, "Authorization header is missing or not in 'Bearer {token}' format\n")
+	HttpResponseShouldBe(t, rr, ErrInvalidAuthorization)
 }
 
 func testHeaderInvalid(t *testing.T) {
@@ -34,7 +34,7 @@ func testHeaderInvalid(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	HttpResponseShouldBe(t, rr, "Authorization header is missing or not in 'Bearer {token}' format\n")
+	HttpResponseShouldBe(t, rr, ErrInvalidAuthorization)
 }
 
 func testTokenInvalid(t *testing.T) {
@@ -45,7 +45,7 @@ func testTokenInvalid(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	HttpResponseShouldBe(t, rr, "Invalid or expired token\n")
+	HttpResponseShouldBe(t, rr, ErrInvalidToken)
 }
 
 func testTokenOlderThan1Minute(t *testing.T) {
@@ -58,7 +58,7 @@ func testTokenOlderThan1Minute(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	HttpResponseShouldBe(t, rr, "Token is older than 1 minute\n")
+	HttpResponseShouldBe(t, rr, ErrTokenExpired)
 }
 
 func prepareGetTasksRequest(t *testing.T) *http.Request {
