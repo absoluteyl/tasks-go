@@ -55,10 +55,28 @@ func teardown() {
 }
 
 func TestTaskHandler(t *testing.T) {
+	t.Run("CreateMissingName", testCreateMissingName)
 	t.Run("Create", testCreate)
+
 	t.Run("GetList", testGetList)
 	t.Run("Update", testUpdate)
 	t.Run("Delete", testDelete)
+}
+
+func testCreateMissingName(t *testing.T) {
+	taskData := map[string]interface{}{}
+
+	taskJson, err := json.Marshal(taskData)
+	if err != nil {
+		t.Fatalf("Error marshaling JSON: %v", err)
+	}
+
+	req := prepareCreateTaskRequest(t, taskJson)
+
+	rr := httptest.NewRecorder()
+	taskHandler.CreateTaskHandler(rr, req)
+
+	testutils.HttpStatusShouldBe(t, rr, http.StatusBadRequest)
 }
 
 func testCreate(t *testing.T) {

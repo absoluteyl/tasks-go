@@ -25,6 +25,11 @@ func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	if _, ok := taskData["name"]; !ok {
+		http.Error(w, "Missing name attribute in request body", http.StatusBadRequest)
+		return
+	}
+
 	createdTaskID, err := h.taskService.CreateTask(taskData["name"].(string))
 	if err != nil {
 		http.Error(w, "Error creating task", http.StatusInternalServerError)
