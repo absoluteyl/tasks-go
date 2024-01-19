@@ -1,5 +1,13 @@
 # tasks-go
 
+## Prerequisites
+
+   - Prepare your own `.env` file
+
+       ```bash
+       cp .env.example .env
+       ```
+   
 ## How to run
 
 1. Build docker image
@@ -10,7 +18,7 @@
 2. Run docker container 
     
     ```bash
-    docker run -d -p 8080:8080 tasks-go:latest
+    docker run -d -p 8080:8080 --env-file ./.env tasks-go:latest
     ```
 
 3. Happy adding tasks
