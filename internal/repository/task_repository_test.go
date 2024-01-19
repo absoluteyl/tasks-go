@@ -93,7 +93,7 @@ func testDeleteTask(t *testing.T) {
 	err := taskRepo.DeleteTask(1)
 	assert.NoError(t, err)
 
-	tasks, err := taskRepo.GetTasks()
-	assert.NoError(t, err)
-	assert.Empty(t, tasks)
+	_, err = taskRepo.GetTaskByID(1)
+	assert.Error(t, err)
+	assert.Equal(t, sql.ErrNoRows, err)
 }
