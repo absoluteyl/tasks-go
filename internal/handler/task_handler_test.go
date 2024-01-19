@@ -134,16 +134,13 @@ func testGetList(t *testing.T) {
 
 	expectedLength := len(tasksData)
 	results, ok := response["result"].([]interface{})
-	if !ok {
-		t.Fatalf("Unexpected result type: %T", response["result"])
-	}
+	assert.Equal(t, true, ok, "Unexpected result type")
 	assert.Equal(t, expectedLength, len(results), "Unexpected task length in response")
 
 	for i, task := range tasksData {
 		result, ok := results[i].(map[string]interface{})
-		if !ok {
-			t.Fatalf("Unexpected result type: %T", results[i])
-		}
+		assert.Equal(t, true, ok, "Unexpected result type")
+
 		taskShouldBe(t, task, model.Task{
 			ID:     int(result["id"].(float64)),
 			Name:   result["name"].(string),
@@ -160,9 +157,7 @@ func testUpdateWithoutID(t *testing.T) {
 
 	reqBody := PrepareJsonBody(t, taskData)
 	req, err := http.NewRequest("PUT", "/task/", bytes.NewBuffer(reqBody))
-	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
-	}
+	assert.NoError(t, err, "Error creating request")
 
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
@@ -182,9 +177,7 @@ func testUpdateWithInvalidID(t *testing.T) {
 
 	reqBody := PrepareJsonBody(t, taskData)
 	req, err := http.NewRequest("PUT", "/task/invalid", bytes.NewBuffer(reqBody))
-	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
-	}
+	assert.NoError(t, err, "Error creating request")
 
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
