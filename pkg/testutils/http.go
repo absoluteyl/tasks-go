@@ -46,21 +46,3 @@ func HTTPBodyShouldHaveResultField(t *testing.T, response map[string]interface{}
 func ResultShouldBe(t *testing.T, expected interface{}, result interface{}) {
 	assert.Equal(t, expected, result, "Result field value is unexpected")
 }
-
-func ParseMapArrayResponse(t *testing.T, rr *httptest.ResponseRecorder) map[string][]map[string]interface{} {
-	var response map[string][]map[string]interface{}
-	err := json.Unmarshal(rr.Body.Bytes(), &response)
-	if err != nil {
-		t.Fatalf("Error unmarshalling JSON response: %v", err)
-	}
-	return response
-}
-
-func ParseMapMapResponse(t *testing.T, rr *httptest.ResponseRecorder) map[string]map[string]interface{} {
-	var response map[string]map[string]interface{}
-	err := json.Unmarshal(rr.Body.Bytes(), &response)
-	if err != nil {
-		t.Fatalf("Error unmarshaling JSON response: %v", err)
-	}
-	return response
-}
