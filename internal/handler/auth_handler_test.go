@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/absoluteyl/tasks-go/pkg/testutils"
+	. "github.com/absoluteyl/tasks-go/pkg/testutils"
 )
 
 func TestCreateAuthHandler(t *testing.T) {
@@ -17,7 +17,7 @@ func TestCreateAuthHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 	CreateAuthHandler(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
+	HttpStatusShouldBe(t, rr, http.StatusOK)
 
 	response := parseMapResponse(t, rr)
 

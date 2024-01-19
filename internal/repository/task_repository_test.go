@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/absoluteyl/tasks-go/internal/model"
-	"github.com/absoluteyl/tasks-go/pkg/testutils"
+	. "github.com/absoluteyl/tasks-go/pkg/testutils"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -24,12 +24,12 @@ func TestMain(m *testing.M) {
 
 func setup(t *testing.T) {
 	var err error
-	testDB, err = testutils.ConnectDB()
+	testDB, err = ConnectDB()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = testutils.PrepareTaskTable(testDB)
+	err = PrepareTaskTable(testDB)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func setup(t *testing.T) {
 }
 
 func teardown() {
-	err := testutils.RemoveDB()
+	err := RemoveDB()
 	if err != nil {
 		fmt.Print(err)
 	}

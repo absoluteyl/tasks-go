@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/absoluteyl/tasks-go/pkg/testutils"
+	. "github.com/absoluteyl/tasks-go/pkg/testutils"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"net/http/httptest"
@@ -22,43 +22,43 @@ func testNoHeader(t *testing.T) {
 	rr, jwtHandler := prepareHandlerRecorderWithMiddleware()
 	jwtHandler.ServeHTTP(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	testutils.HttpResponseShouldBe(t, rr, "Authorization header is missing or not in 'Bearer {token}' format\n")
+	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
+	HttpResponseShouldBe(t, rr, "Authorization header is missing or not in 'Bearer {token}' format\n")
 }
 
 func testHeaderInvalid(t *testing.T) {
 	req := prepareGetTasksRequest(t)
-	testutils.SetupAuthorizationHeader(req, "InvalidFormat")
+	SetupAuthorizationHeader(req, "InvalidFormat")
 
 	rr, jwtHandler := prepareHandlerRecorderWithMiddleware()
 	jwtHandler.ServeHTTP(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	testutils.HttpResponseShouldBe(t, rr, "Authorization header is missing or not in 'Bearer {token}' format\n")
+	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
+	HttpResponseShouldBe(t, rr, "Authorization header is missing or not in 'Bearer {token}' format\n")
 }
 
 func testTokenInvalid(t *testing.T) {
 	req := prepareGetTasksRequest(t)
-	testutils.SetupAuthorizationHeader(req, "Bearer InvalidToken")
+	SetupAuthorizationHeader(req, "Bearer InvalidToken")
 
 	rr, jwtHandler := prepareHandlerRecorderWithMiddleware()
 	jwtHandler.ServeHTTP(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	testutils.HttpResponseShouldBe(t, rr, "Invalid or expired token\n")
+	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
+	HttpResponseShouldBe(t, rr, "Invalid or expired token\n")
 }
 
 func testTokenOlderThan1Minute(t *testing.T) {
 	req := prepareGetTasksRequest(t)
 	tokenString := generateJWTToken(t)
 
-	testutils.SetupAuthorizationHeader(req, "Bearer "+tokenString)
+	SetupAuthorizationHeader(req, "Bearer "+tokenString)
 
 	rr, jwtHandler := prepareHandlerRecorderWithMiddleware()
 	jwtHandler.ServeHTTP(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	testutils.HttpResponseShouldBe(t, rr, "Token is older than 1 minute\n")
+	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
+	HttpResponseShouldBe(t, rr, "Token is older than 1 minute\n")
 }
 
 func prepareGetTasksRequest(t *testing.T) *http.Request {

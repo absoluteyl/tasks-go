@@ -8,7 +8,7 @@ import (
 	"github.com/absoluteyl/tasks-go/internal/model"
 	"github.com/absoluteyl/tasks-go/internal/repository"
 	"github.com/absoluteyl/tasks-go/internal/service"
-	"github.com/absoluteyl/tasks-go/pkg/testutils"
+	. "github.com/absoluteyl/tasks-go/pkg/testutils"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -32,12 +32,12 @@ func TestMain(m *testing.M) {
 
 func setup(t *testing.T) {
 	var err error
-	testDB, err = testutils.ConnectDB()
+	testDB, err = ConnectDB()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = testutils.PrepareTaskTable(testDB)
+	err = PrepareTaskTable(testDB)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func setup(t *testing.T) {
 }
 
 func teardown() {
-	err := testutils.RemoveDB()
+	err := RemoveDB()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -77,7 +77,7 @@ func testCreateMissingName(t *testing.T) {
 	rr := httptest.NewRecorder()
 	taskHandler.CreateTaskHandler(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusBadRequest)
+	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
 }
 
 func testCreate(t *testing.T) {
@@ -92,7 +92,7 @@ func testCreate(t *testing.T) {
 	rr := httptest.NewRecorder()
 	taskHandler.CreateTaskHandler(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusCreated)
+	HttpStatusShouldBe(t, rr, http.StatusCreated)
 
 	response := parseMapMapResponse(t, rr)
 
@@ -124,7 +124,7 @@ func testGetList(t *testing.T) {
 	rr := httptest.NewRecorder()
 	taskHandler.GetTasksHandler(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
+	HttpStatusShouldBe(t, rr, http.StatusOK)
 
 	response := parseMapArrayResponse(t, rr)
 
@@ -157,7 +157,7 @@ func testUpdateNotExist(t *testing.T) {
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusNotFound)
+	HttpStatusShouldBe(t, rr, http.StatusNotFound)
 }
 
 func testUpdate(t *testing.T) {
@@ -174,7 +174,7 @@ func testUpdate(t *testing.T) {
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
+	HttpStatusShouldBe(t, rr, http.StatusOK)
 
 	response := parseMapMapResponse(t, rr)
 
@@ -198,7 +198,7 @@ func testDeleteNotExist(t *testing.T) {
 	rr := httptest.NewRecorder()
 	taskHandler.DeleteTaskHandler(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusNotFound)
+	HttpStatusShouldBe(t, rr, http.StatusNotFound)
 }
 
 func testDelete(t *testing.T) {
@@ -207,7 +207,7 @@ func testDelete(t *testing.T) {
 	rr := httptest.NewRecorder()
 	taskHandler.DeleteTaskHandler(rr, req)
 
-	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
+	HttpStatusShouldBe(t, rr, http.StatusOK)
 }
 
 func prepareJsonBody(t *testing.T, data map[string]interface{}) []byte {
