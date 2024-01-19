@@ -22,24 +22,24 @@ func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) 
 	var taskData map[string]interface{}
 	err := json.NewDecoder(r.Body).Decode(&taskData)
 	if err != nil {
-		setErrResponse(w, http.StatusBadRequest, "Invalid request body")
+		setErrResponse(w, http.StatusBadRequest, ErrBadRequest)
 		return
 	}
 
 	if _, ok := taskData["name"]; !ok {
-		setErrResponse(w, http.StatusBadRequest, "Missing name attribute in request body")
+		setErrResponse(w, http.StatusBadRequest, ErrMissingTaskName)
 		return
 	}
 
 	createdTaskID, err := h.taskService.CreateTask(taskData["name"].(string))
 	if err != nil {
-		setErrResponse(w, http.StatusInternalServerError, "Error creating task")
+		setErrResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		return
 	}
 
 	newTask, err := h.taskService.GetTaskByID(createdTaskID)
 	if err != nil {
-		setErrResponse(w, http.StatusInternalServerError, "Error getting created task")
+		setErrResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		return
 	}
 
@@ -59,7 +59,7 @@ func (h *TaskHandler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 	tasks, err := h.taskService.GetTasks()
 	if err != nil {
-		setErrResponse(w, http.StatusInternalServerError, "Error getting tasks")
+		setErrResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		return
 	}
 
@@ -74,31 +74,31 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 
 	id := strings.TrimPrefix(r.URL.Path, "/task/")
 	if id == "" {
-		setErrResponse(w, http.StatusBadRequest, "Missing task ID")
+		setErrResponse(w, http.StatusBadRequest, ErrMissingTaskID)
 		return
 	}
 
 	taskID, err := strconv.Atoi(id)
 	if err != nil {
-		setErrResponse(w, http.StatusBadRequest, "Invalid task ID")
+		setErrResponse(w, http.StatusBadRequest, ErrInvalidTaskID)
 		return
 	}
 
 	var taskData map[string]interface{}
 	err = json.NewDecoder(r.Body).Decode(&taskData)
 	if err != nil {
-		setErrResponse(w, http.StatusBadRequest, "Invalid request body")
+		setErrResponse(w, http.StatusBadRequest, ErrBadRequest)
 		return
 	}
 
 	if taskData["id"] != nil {
-		setErrResponse(w, http.StatusBadRequest, "Invalid request body: task ID not allowed")
+		setErrResponse(w, http.StatusBadRequest, ErrNotAllowTaskID)
 		return
 	}
 
 	existingTask, err := h.taskService.GetTaskByID(taskID)
 	if err != nil || existingTask.ID == 0 {
-		setErrResponse(w, http.StatusNotFound, "Task not found")
+		setErrResponse(w, http.StatusNotFound, ErrTaskNotFound)
 		return
 	}
 
@@ -107,7 +107,7 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 
 	err = h.taskService.UpdateTask(&existingTask)
 	if err != nil {
-		setErrResponse(w, http.StatusInternalServerError, "Error updating task")
+		setErrResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		return
 	}
 
@@ -122,25 +122,25 @@ func (h *TaskHandler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) 
 
 	id := strings.TrimPrefix(r.URL.Path, "/task/")
 	if id == "" {
-		setErrResponse(w, http.StatusBadRequest, "Missing task ID")
+		setErrResponse(w, http.StatusBadRequest, ErrMissingTaskID)
 		return
 	}
 
 	taskID, err := strconv.Atoi(id)
 	if err != nil {
-		setErrResponse(w, http.StatusBadRequest, "Invalid task ID")
+		setErrResponse(w, http.StatusBadRequest, ErrInvalidTaskID)
 		return
 	}
 
 	existingTask, err := h.taskService.GetTaskByID(taskID)
 	if err != nil || existingTask.ID == 0 {
-		setErrResponse(w, http.StatusNotFound, "Task not found")
+		setErrResponse(w, http.StatusNotFound, ErrTaskNotFound)
 		return
 	}
 
 	err = h.taskService.DeleteTask(taskID)
 	if err != nil {
-		setErrResponse(w, http.StatusInternalServerError, "Error deleting task")
+		setErrResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		return
 	}
 }

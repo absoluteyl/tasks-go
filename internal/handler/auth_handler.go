@@ -18,13 +18,13 @@ func CreateAuthHandler(w http.ResponseWriter, r *http.Request) {
 	user, pass, ok := r.BasicAuth()
 	if !ok || user != username || pass != password {
 		w.Header().Set("WWW-Authenticate", `Basic realm="Please enter your username and password"`)
-		setErrResponse(w, http.StatusUnauthorized, "Unauthorized")
+		setErrResponse(w, http.StatusUnauthorized, ErrUnauthorized)
 		return
 	}
 
 	token, err := auth.GenerateToken()
 	if err != nil {
-		setErrResponse(w, http.StatusInternalServerError, "Failed to generate token")
+		setErrResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		return
 	}
 

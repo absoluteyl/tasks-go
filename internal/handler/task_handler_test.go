@@ -82,7 +82,7 @@ func testCreateMissingName(t *testing.T) {
 
 	response := ParseResponse(t, rr)
 	HTTPBodyShouldHaveResultField(t, response)
-	ResultShouldBe(t, "Missing name attribute in request body", response["result"])
+	ResultShouldBe(t, ErrMissingTaskName, response["result"])
 }
 
 func testCreate(t *testing.T) {
@@ -171,7 +171,7 @@ func testUpdateWithoutID(t *testing.T) {
 
 	response := ParseResponse(t, rr)
 	HTTPBodyShouldHaveResultField(t, response)
-	ResultShouldBe(t, "Missing task ID", response["result"])
+	ResultShouldBe(t, ErrMissingTaskID, response["result"])
 }
 
 func testUpdateWithInvalidID(t *testing.T) {
@@ -193,7 +193,7 @@ func testUpdateWithInvalidID(t *testing.T) {
 
 	response := ParseResponse(t, rr)
 	HTTPBodyShouldHaveResultField(t, response)
-	ResultShouldBe(t, "Invalid task ID", response["result"])
+	ResultShouldBe(t, ErrInvalidTaskID, response["result"])
 }
 
 func testUpdateWithIDInBody(t *testing.T) {
@@ -211,7 +211,7 @@ func testUpdateWithIDInBody(t *testing.T) {
 
 	response := ParseResponse(t, rr)
 	HTTPBodyShouldHaveResultField(t, response)
-	ResultShouldBe(t, "Invalid request body: task ID not allowed", response["result"])
+	ResultShouldBe(t, ErrNotAllowTaskID, response["result"])
 }
 
 func testUpdateNotExist(t *testing.T) {
