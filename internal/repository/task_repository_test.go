@@ -84,9 +84,9 @@ func testUpdateTask(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, updatedTask)
 
-	assert.Equal(t, 1, updatedTask.ID)
-	assert.Equal(t, "Eat Lunch", updatedTask.Name)
-	assert.Equal(t, 1, updatedTask.Status)
+	assert.Equal(t, task.ID, updatedTask.ID)
+	assert.Equal(t, task.Name, updatedTask.Name)
+	assert.Equal(t, task.Status, updatedTask.Status)
 }
 
 func testDeleteTask(t *testing.T) {
