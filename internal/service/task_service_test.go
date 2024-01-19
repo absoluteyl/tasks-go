@@ -17,6 +17,12 @@ var testDB *sql.DB
 var taskRepo *repository.TaskRepository
 var taskService *TaskService
 
+var taskData = model.Task{
+	ID:     1,
+	Name:   "Eat Dinner",
+	Status: 0,
+}
+
 func TestMain(m *testing.M) {
 	t := &testing.T{}
 	setup(t)
@@ -56,7 +62,7 @@ func TestTaskService(t *testing.T) {
 }
 
 func testCreate(t *testing.T) {
-	taskName := "Eat Dinner"
+	taskName := taskData.Name
 
 	taskID, err := taskService.CreateTask(taskName)
 	assert.NoError(t, err)
@@ -69,19 +75,16 @@ func testGetList(t *testing.T) {
 	assert.NotZero(t, len(tasks))
 	assert.Len(t, tasks, 1)
 
-	assert.Equal(t, 1, tasks[0].ID)
-	assert.Equal(t, "Eat Dinner", tasks[0].Name)
-	assert.Equal(t, 0, tasks[0].Status)
+	assert.Equal(t, taskData.ID, tasks[0].ID)
+	assert.Equal(t, taskData.Name, tasks[0].Name)
+	assert.Equal(t, taskData.Status, tasks[0].Status)
 }
 
 func testUpdate(t *testing.T) {
-	task := &model.Task{
-		ID:     1,
-		Name:   "Eat Lunch",
-		Status: 1,
-	}
+	taskData.Name = "Eat Lunch"
+	taskData.Status = 1
 
-	err := taskService.UpdateTask(task)
+	err := taskService.UpdateTask(&taskData)
 	assert.NoError(t, err)
 
 	tasks, err := taskService.GetTasks()
@@ -89,13 +92,13 @@ func testUpdate(t *testing.T) {
 	assert.NotZero(t, len(tasks))
 	assert.Len(t, tasks, 1)
 
-	assert.Equal(t, 1, tasks[0].ID)
-	assert.Equal(t, "Eat Lunch", tasks[0].Name)
-	assert.Equal(t, 1, tasks[0].Status)
+	assert.Equal(t, taskData.ID, tasks[0].ID)
+	assert.Equal(t, taskData.Name, tasks[0].Name)
+	assert.Equal(t, taskData.Status, tasks[0].Status)
 }
 
 func testDelete(t *testing.T) {
-	err := taskService.DeleteTask(1)
+	err := taskService.DeleteTask(taskData.ID)
 	assert.NoError(t, err)
 
 	tasks, err := taskService.GetTasks()
