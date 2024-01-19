@@ -15,10 +15,7 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("sqlite3", "./db/tasks.db")
-	if err != nil {
-		log.Fatalf("Error opening database: %v", err)
-	}
+	db := connectDB("sqlite3", "./db/tasks.db")
 	defer db.Close()
 
 	taskRepository := repository.NewTaskRepository(db)
@@ -37,4 +34,12 @@ func main() {
 	n := negroni.Classic()
 	n.UseHandler(mux)
 	n.Run(":8080")
+}
+
+func connectDB(dbDriver string, dbPath string) *sql.DB {
+	db, err := sql.Open(dbDriver, dbPath)
+	if err != nil {
+		log.Fatalf("Error opening database: %v", err)
+	}
+	return db
 }
