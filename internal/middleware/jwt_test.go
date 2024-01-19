@@ -1,8 +1,8 @@
 package middleware
 
 import (
+	"github.com/absoluteyl/tasks-go/pkg/auth"
 	. "github.com/absoluteyl/tasks-go/pkg/testutils"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -77,10 +77,11 @@ func prepareHandlerRecorderWithMiddleware() (*httptest.ResponseRecorder, http.Ha
 }
 
 func generateJWTToken(t *testing.T) string {
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
-	claims["iat"] = time.Now().Add(-2 * time.Minute).Unix()
-	tokenString, err := token.SignedString([]byte("secret"))
+	token := auth.SetSignMethod()
+
+	auth.PrepareClaims(token, time.Now().Add(-2*time.Minute).Unix())
+
+	tokenString, err := auth.Sign(token)
 	if err != nil {
 		t.Fatal(err)
 	}
