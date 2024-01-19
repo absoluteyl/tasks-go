@@ -6,12 +6,12 @@ import (
 	"os"
 )
 
-var DB_DRIVER = "sqlite3"
-var DB_NAME = "test.db"
+var dbDriver = "sqlite3"
+var dbPath = "test.db"
 
 func ConnectDB() (*sql.DB, error) {
 	var err error
-	db, err := sql.Open(DB_DRIVER, DB_NAME)
+	db, err := sql.Open(dbDriver, dbPath)
 	if err != nil {
 		return nil, fmt.Errorf("Error connecting to test database: %v", err)
 	}
@@ -35,7 +35,7 @@ func PrepareTaskTable(db *sql.DB) error {
 }
 
 func RemoveDB() error {
-	err := os.Remove(DB_NAME)
+	err := os.Remove(dbPath)
 	if err != nil {
 		return fmt.Errorf("Error removing test database: %v", err)
 	}
