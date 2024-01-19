@@ -70,12 +70,9 @@ func TestTaskHandler(t *testing.T) {
 func testCreateMissingName(t *testing.T) {
 	taskData := map[string]interface{}{}
 
-	taskJson, err := json.Marshal(taskData)
-	if err != nil {
-		t.Fatalf("Error marshaling JSON: %v", err)
-	}
+	reqBody := prepareJsonBody(t, taskData)
 
-	req := prepareCreateTaskRequest(t, taskJson)
+	req := prepareCreateTaskRequest(t, reqBody)
 
 	rr := httptest.NewRecorder()
 	taskHandler.CreateTaskHandler(rr, req)
@@ -88,12 +85,9 @@ func testCreate(t *testing.T) {
 		"name": "Eat Dinner",
 	}
 
-	taskJson, err := json.Marshal(taskData)
-	if err != nil {
-		t.Fatalf("Error marshaling JSON: %v", err)
-	}
+	reqBody := prepareJsonBody(t, taskData)
 
-	req := prepareCreateTaskRequest(t, taskJson)
+	req := prepareCreateTaskRequest(t, reqBody)
 
 	rr := httptest.NewRecorder()
 	taskHandler.CreateTaskHandler(rr, req)
@@ -150,18 +144,15 @@ func testGetList(t *testing.T) {
 }
 
 func testUpdateNotExist(t *testing.T) {
-	taskData := model.Task{
-		ID:     2,
-		Name:   "Eat Lunch",
-		Status: 1,
+	taskData := map[string]interface{}{
+		"id":     2,
+		"name":   "Eat Lunch",
+		"status": 1,
 	}
 
-	taskJson, err := json.Marshal(taskData)
-	if err != nil {
-		t.Fatalf("Error marshaling JSON: %v", err)
-	}
+	reqBody := prepareJsonBody(t, taskData)
 
-	req := prepareUpdateTaskRequest(t, taskJson)
+	req := prepareUpdateTaskRequest(t, reqBody)
 
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
@@ -170,18 +161,15 @@ func testUpdateNotExist(t *testing.T) {
 }
 
 func testUpdate(t *testing.T) {
-	taskData := model.Task{
-		ID:     1,
-		Name:   "Eat Lunch",
-		Status: 1,
+	taskData := map[string]interface{}{
+		"id":     1,
+		"name":   "Eat Lunch",
+		"status": 1,
 	}
 
-	taskJson, err := json.Marshal(taskData)
-	if err != nil {
-		t.Fatalf("Error marshaling JSON: %v", err)
-	}
+	reqBody := prepareJsonBody(t, taskData)
 
-	req := prepareUpdateTaskRequest(t, taskJson)
+	req := prepareUpdateTaskRequest(t, reqBody)
 
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
@@ -193,7 +181,11 @@ func testUpdate(t *testing.T) {
 	result, ok := response["result"]
 	assert.True(t, ok, "Result field not found in response")
 
-	taskShouldBe(t, taskData, model.Task{
+	taskShouldBe(t, model.Task{
+		ID:     taskData["id"].(int),
+		Name:   taskData["name"].(string),
+		Status: taskData["status"].(int),
+	}, model.Task{
 		ID:     int(result["id"].(float64)),
 		Name:   result["name"].(string),
 		Status: int(result["status"].(float64)),
@@ -216,6 +208,14 @@ func testDelete(t *testing.T) {
 	taskHandler.DeleteTaskHandler(rr, req)
 
 	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
+}
+
+func prepareJsonBody(t *testing.T, data map[string]interface{}) []byte {
+	body, err := json.Marshal(data)
+	if err != nil {
+		t.Fatalf("Error marshaling JSON: %v", err)
+	}
+	return body
 }
 
 func prepareDeleteTaskRequest(t *testing.T, id int) *http.Request {
