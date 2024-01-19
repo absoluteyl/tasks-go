@@ -78,6 +78,9 @@ func testCreateMissingName(t *testing.T) {
 	taskHandler.CreateTaskHandler(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
+
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
 }
 
 func testCreate(t *testing.T) {

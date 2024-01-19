@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -19,21 +18,11 @@ func TestCreateAuthHandler(t *testing.T) {
 
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 
-	response := parseMapResponse(t, rr)
+	response := ParseResponse(t, rr)
+	result, ok := HTTPBodyShouldHaveResultField(t, response)
 
-	token, ok := response["result"]
-	assert.True(t, ok, "Result field not found in response")
-
-	_, ok = token.(string)
+	_, ok = result.(string)
 	assert.True(t, ok, "Result field is not a string")
-}
-func parseMapResponse(t *testing.T, rr *httptest.ResponseRecorder) map[string]interface{} {
-	var response map[string]interface{}
-	err := json.Unmarshal(rr.Body.Bytes(), &response)
-	if err != nil {
-		t.Fatalf("Error unmarshaling JSON response: %v", err)
-	}
-	return response
 }
 
 func prepareCreateAuthRequest(t *testing.T) *http.Request {
