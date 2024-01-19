@@ -56,11 +56,9 @@ func TestTaskService(t *testing.T) {
 }
 
 func testCreateTask(t *testing.T) {
-	task := &model.Task{
-		Name: "Eat Dinner",
-	}
+	taskName := "Eat Dinner"
 
-	taskID, err := taskService.CreateTask(task)
+	taskID, err := taskService.CreateTask(taskName)
 	assert.NoError(t, err)
 	assert.NotZero(t, taskID)
 }
