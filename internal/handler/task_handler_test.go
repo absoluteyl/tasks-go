@@ -71,33 +71,27 @@ func testCreateTaskHandler(t *testing.T) {
 		t.Fatalf("Error marshaling JSON: %v", err)
 	}
 
-	req, err := http.NewRequest("POST", "/task", bytes.NewBuffer(taskJson))
-	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
-	}
+	req := prepareCreateTaskRequest(t, taskJson)
 
 	rr := httptest.NewRecorder()
 	taskHandler.CreateTaskHandler(rr, req)
 
-	expectedHTTPStatus := http.StatusCreated
-	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
+	testutils.HttpStatusShouldBe(t, rr, http.StatusCreated)
 
-	var response map[string]map[string]interface{}
-	err = json.Unmarshal(rr.Body.Bytes(), &response)
-	if err != nil {
-		t.Fatalf("Error unmarshaling JSON response: %v", err)
-	}
+	response := parseMapMapResponse(t, rr)
 
 	result, ok := response["result"]
-	assert.Truef(t, ok, "Result field not found in response")
+	assert.True(t, ok, "Result field not found in response")
 
-	expectedID := 1
-	expectedName := taskData["name"].(string)
-	expectedStatus := 0
-
-	assert.Equal(t, expectedID, int(result["id"].(float64)), "Unexpected task id in response")
-	assert.Equal(t, expectedName, result["name"], "Unexpected task name in response")
-	assert.Equal(t, expectedStatus, int(result["status"].(float64)), "Unexpected task status in response")
+	taskShouldBe(t, model.Task{
+		ID:     1,
+		Name:   taskData["name"].(string),
+		Status: 0,
+	}, model.Task{
+		ID:     int(result["id"].(float64)),
+		Name:   result["name"].(string),
+		Status: int(result["status"].(float64)),
+	})
 }
 
 func testGetTaskHandler(t *testing.T) {
@@ -109,22 +103,14 @@ func testGetTaskHandler(t *testing.T) {
 		},
 	}
 
-	req, err := http.NewRequest("Get", "/tasks", nil)
-	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
-	}
+	req := prepareGetTasksRequest(t)
 
 	rr := httptest.NewRecorder()
 	taskHandler.GetTasksHandler(rr, req)
 
-	expectedHTTPStatus := http.StatusOK
-	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
+	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
 
-	var response map[string][]map[string]interface{}
-	err = json.Unmarshal(rr.Body.Bytes(), &response)
-	if err != nil {
-		t.Fatalf("Error unmarshaling JSON response: %v", err)
-	}
+	response := parseMapArrayResponse(t, rr)
 
 	result, ok := response["result"]
 	assert.True(t, ok, "Result field not found in response")
@@ -133,15 +119,11 @@ func testGetTaskHandler(t *testing.T) {
 	assert.Equal(t, expectedLength, len(result), "Unexpected task length in response")
 
 	for i, task := range tasksData {
-
-		expectedID := task.ID
-		expectedName := task.Name
-		expectedStatus := task.Status
-
-		assert.Equal(t, expectedID, int(result[i]["id"].(float64)), "Unexpected task id in response")
-		assert.Equal(t, expectedName, result[i]["name"], "Unexpected task name in response")
-		assert.Equal(t, expectedStatus, int(result[i]["status"].(float64)), "Unexpected task status in response")
-
+		taskShouldBe(t, task, model.Task{
+			ID:     int(result[i]["id"].(float64)),
+			Name:   result[i]["name"].(string),
+			Status: int(result[i]["status"].(float64)),
+		})
 	}
 }
 
@@ -157,43 +139,86 @@ func testUpdateTaskHandler(t *testing.T) {
 		t.Fatalf("Error marshaling JSON: %v", err)
 	}
 
-	req, err := http.NewRequest("PUT", "/task/", bytes.NewBuffer(taskJson))
-	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
-	}
+	req := prepareUpdateTaskRequest(t, taskJson)
 
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
 
-	expectedHTTPStatus := http.StatusOK
-	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
+	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
 
-	var response map[string]map[string]interface{}
-	err = json.Unmarshal(rr.Body.Bytes(), &response)
-	if err != nil {
-		t.Fatalf("Error unmarshaling JSON response: %v", err)
-	}
+	response := parseMapMapResponse(t, rr)
 
 	result, ok := response["result"]
-	assert.Truef(t, ok, "Result field not found in response")
+	assert.True(t, ok, "Result field not found in response")
 
-	expectedID := taskData.ID
-	expectedName := taskData.Name
-	expectedStatus := taskData.Status
-	assert.Equal(t, expectedID, int(result["id"].(float64)), "Unexpected task id in response")
-	assert.Equal(t, expectedName, result["name"], "Unexpected task name in response")
-	assert.Equal(t, expectedStatus, int(result["status"].(float64)), "Unexpected task status in response")
+	taskShouldBe(t, taskData, model.Task{
+		ID:     int(result["id"].(float64)),
+		Name:   result["name"].(string),
+		Status: int(result["status"].(float64)),
+	})
 }
 
 func testDeleteTaskHandler(t *testing.T) {
-	req, err := http.NewRequest("DELETE", "/task/1", nil)
-	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
-	}
+	req := prepareDeleteTaskRequest(t)
 
 	rr := httptest.NewRecorder()
 	taskHandler.DeleteTaskHandler(rr, req)
 
-	expectedHTTPStatus := http.StatusOK
-	assert.Equal(t, expectedHTTPStatus, rr.Code, "Handler returned wrong status code")
+	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
+}
+
+func prepareDeleteTaskRequest(t *testing.T) *http.Request {
+	req, err := http.NewRequest("DELETE", "/task/1", nil)
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+	return req
+}
+
+func prepareCreateTaskRequest(t *testing.T, body []byte) *http.Request {
+	req, err := http.NewRequest("POST", "/task", bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+	return req
+}
+
+func prepareGetTasksRequest(t *testing.T) *http.Request {
+	req, err := http.NewRequest("GET", "/tasks", nil)
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+	return req
+}
+
+func prepareUpdateTaskRequest(t *testing.T, body []byte) *http.Request {
+	req, err := http.NewRequest("PUT", "/task/", bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+	return req
+}
+
+func parseMapArrayResponse(t *testing.T, rr *httptest.ResponseRecorder) map[string][]map[string]interface{} {
+	var response map[string][]map[string]interface{}
+	err := json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatalf("Error unmarshalling JSON response: %v", err)
+	}
+	return response
+}
+
+func parseMapMapResponse(t *testing.T, rr *httptest.ResponseRecorder) map[string]map[string]interface{} {
+	var response map[string]map[string]interface{}
+	err := json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatalf("Error unmarshaling JSON response: %v", err)
+	}
+	return response
+}
+
+func taskShouldBe(t *testing.T, expectedTask model.Task, actualTask model.Task) {
+	assert.Equal(t, expectedTask.ID, actualTask.ID, "Unexpected task id")
+	assert.Equal(t, expectedTask.Name, actualTask.Name, "Unexpected task name")
+	assert.Equal(t, expectedTask.Status, actualTask.Status, "Unexpected task status")
 }
