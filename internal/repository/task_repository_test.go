@@ -52,11 +52,9 @@ func TestTaskRepository(t *testing.T) {
 }
 
 func testCreateTask(t *testing.T) {
-	task := &model.Task{
-		Name: "Eat Dinner",
-	}
+	taskName := "Eat Dinner"
 
-	taskID, err := taskRepo.CreateTask(task)
+	taskID, err := taskRepo.CreateTask(taskName)
 	assert.NoError(t, err)
 	assert.NotZero(t, taskID)
 }

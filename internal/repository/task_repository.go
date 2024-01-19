@@ -13,11 +13,11 @@ func NewTaskRepository(db *sql.DB) *TaskRepository {
 	return &TaskRepository{db: db}
 }
 
-func (r *TaskRepository) CreateTask(task *model.Task) (int, error) {
+func (r *TaskRepository) CreateTask(taskName string) (int, error) {
 	createTaskSQL := `
 	INSERT INTO tasks (name) VALUES (?)
 	`
-	result, err := r.db.Exec(createTaskSQL, task.Name)
+	result, err := r.db.Exec(createTaskSQL, taskName)
 	if err != nil {
 		return 0, err
 	}
