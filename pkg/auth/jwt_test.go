@@ -21,7 +21,7 @@ func TestGenerateToken(t *testing.T) {
 			return nil, jwt.NewValidationError("Unexpected signing method", jwt.ValidationErrorSignatureInvalid)
 		}
 
-		return []byte("secret"), nil
+		return []byte(jwtSecret), nil
 	})
 
 	if err != nil {
