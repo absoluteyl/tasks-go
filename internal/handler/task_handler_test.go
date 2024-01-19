@@ -155,7 +155,7 @@ func testUpdateNotExist(t *testing.T) {
 
 	reqBody := prepareJsonBody(t, taskData)
 
-	req := prepareUpdateTaskRequest(t, reqBody)
+	req := prepareUpdateTaskRequest(t, taskData["id"].(int), reqBody)
 
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
@@ -172,7 +172,7 @@ func testUpdate(t *testing.T) {
 
 	reqBody := prepareJsonBody(t, taskData)
 
-	req := prepareUpdateTaskRequest(t, reqBody)
+	req := prepareUpdateTaskRequest(t, taskData["id"].(int), reqBody)
 
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
@@ -246,8 +246,9 @@ func prepareGetTasksRequest(t *testing.T) *http.Request {
 	return req
 }
 
-func prepareUpdateTaskRequest(t *testing.T, body []byte) *http.Request {
-	req, err := http.NewRequest("PUT", "/task/", bytes.NewBuffer(body))
+func prepareUpdateTaskRequest(t *testing.T, id int, body []byte) *http.Request {
+	taskID := fmt.Sprintf("%d", id)
+	req, err := http.NewRequest("PUT", "/task/"+taskID, bytes.NewBuffer(body))
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
 	}
