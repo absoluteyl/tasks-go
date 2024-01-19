@@ -50,13 +50,13 @@ func teardown() {
 }
 
 func TestTaskRepository(t *testing.T) {
-	t.Run("CreateTask", testCreateTask)
-	t.Run("GetTasks", testGetTasks)
-	t.Run("UpdateTask", testUpdateTask)
-	t.Run("DeleteTask", testDeleteTask)
+	t.Run("Create", testCreate)
+	t.Run("GetList", testGetList)
+	t.Run("Update", testUpdate)
+	t.Run("Delete", testDelete)
 }
 
-func testCreateTask(t *testing.T) {
+func testCreate(t *testing.T) {
 	taskName := taskData.Name
 
 	taskID, err := taskRepo.CreateTask(taskName)
@@ -64,7 +64,7 @@ func testCreateTask(t *testing.T) {
 	assert.NotZero(t, taskID)
 }
 
-func testGetTasks(t *testing.T) {
+func testGetList(t *testing.T) {
 	tasks, err := taskRepo.GetTasks()
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tasks)
@@ -75,7 +75,7 @@ func testGetTasks(t *testing.T) {
 	assert.Equal(t, taskData.Status, tasks[0].Status)
 }
 
-func testUpdateTask(t *testing.T) {
+func testUpdate(t *testing.T) {
 	taskData.Name = "Eat Lunch"
 	taskData.Status = 1
 
@@ -91,7 +91,7 @@ func testUpdateTask(t *testing.T) {
 	assert.Equal(t, taskData.Status, updatedTask.Status)
 }
 
-func testDeleteTask(t *testing.T) {
+func testDelete(t *testing.T) {
 	err := taskRepo.DeleteTask(taskData.ID)
 	assert.NoError(t, err)
 
