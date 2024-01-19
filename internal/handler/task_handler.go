@@ -56,70 +56,72 @@ func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 func (h *TaskHandler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
+	setContentType(w)
+
 	tasks, err := h.taskService.GetTasks()
 	if err != nil {
-		http.Error(w, "Error getting tasks", http.StatusInternalServerError)
+		setErrResponse(w, http.StatusInternalServerError, "Error getting tasks")
 		return
 	}
 
 	response := map[string]interface{}{
 		"result": tasks,
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	jsonEncode(w, response)
 }
 
 func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	setContentType(w)
+
 	var targetTask model.Task
 	err := json.NewDecoder(r.Body).Decode(&targetTask)
 	if err != nil {
-		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		setErrResponse(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
 	existingTask, err := h.taskService.GetTaskByID(targetTask.ID)
 	if err != nil || existingTask.ID == 0 {
-		http.Error(w, "Task not found", http.StatusNotFound)
+		setErrResponse(w, http.StatusNotFound, "Task not found")
 		return
 	}
 
 	err = h.taskService.UpdateTask(&targetTask)
 	if err != nil {
-		http.Error(w, "Error updating task", http.StatusInternalServerError)
+		setErrResponse(w, http.StatusInternalServerError, "Error updating task")
 		return
 	}
 
 	response := map[string]interface{}{
 		"result": targetTask,
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	jsonEncode(w, response)
 }
 
 func (h *TaskHandler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
+	setContentType(w)
+
 	id := strings.TrimPrefix(r.URL.Path, "/task/")
 	if id == "" {
-		http.Error(w, "Missing task ID", http.StatusBadRequest)
+		setErrResponse(w, http.StatusBadRequest, "Missing task ID")
 		return
 	}
+
 	taskID, err := strconv.Atoi(id)
+	if err != nil {
+		setErrResponse(w, http.StatusBadRequest, "Invalid task ID")
+		return
+	}
+
 	existingTask, err := h.taskService.GetTaskByID(taskID)
 	if err != nil || existingTask.ID == 0 {
-		http.Error(w, "Task not found", http.StatusNotFound)
+		setErrResponse(w, http.StatusNotFound, "Task not found")
 		return
 	}
 
 	err = h.taskService.DeleteTask(taskID)
 	if err != nil {
-		http.Error(w, "Error deleting task", http.StatusInternalServerError)
+		setErrResponse(w, http.StatusInternalServerError, "Error deleting task")
 		return
 	}
 }
