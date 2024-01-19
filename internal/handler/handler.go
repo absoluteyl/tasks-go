@@ -5,8 +5,16 @@ import (
 	"net/http"
 )
 
-func setContentType(w http.ResponseWriter) {
+func SetContentType(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
+}
+
+func SetErrResponse(w http.ResponseWriter, httpCode int, msg string) {
+	w.WriteHeader(httpCode)
+	response := map[string]interface{}{
+		"result": msg,
+	}
+	jsonEncode(w, response)
 }
 
 func jsonEncode(w http.ResponseWriter, response map[string]interface{}) {
@@ -14,12 +22,4 @@ func jsonEncode(w http.ResponseWriter, response map[string]interface{}) {
 	if encodeErr != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-}
-
-func setErrResponse(w http.ResponseWriter, httpCode int, msg string) {
-	w.WriteHeader(httpCode)
-	response := map[string]interface{}{
-		"result": msg,
-	}
-	jsonEncode(w, response)
 }
