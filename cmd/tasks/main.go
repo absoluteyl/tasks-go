@@ -18,6 +18,14 @@ func main() {
 	db := connectDB("sqlite3", "./db/tasks.db")
 	defer db.Close()
 
+	mux := setupRouter(db)
+
+	n := negroni.Classic()
+	n.UseHandler(mux)
+	n.Run(":8080")
+}
+
+func setupRouter(db *sql.DB) *bone.Mux {
 	taskRepository := repository.NewTaskRepository(db)
 	taskService := service.NewTaskServiceWithRepository(taskRepository)
 	taskHandler := handler.NewTaskHandler(taskService)
@@ -31,9 +39,7 @@ func main() {
 	mux.Put("/task/:id", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.UpdateTaskHandler)))
 	mux.Delete("/task/:id", middleware.JWTMiddleware(http.HandlerFunc(taskHandler.DeleteTaskHandler)))
 
-	n := negroni.Classic()
-	n.UseHandler(mux)
-	n.Run(":8080")
+	return mux
 }
 
 func connectDB(dbDriver string, dbPath string) *sql.DB {
