@@ -24,3 +24,5 @@ go.work
 db/*
 !db/example.db
 
+.env*
+!.env.example
