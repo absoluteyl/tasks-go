@@ -23,7 +23,10 @@ func testNoHeader(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	HttpResponseShouldBe(t, rr, ErrInvalidAuthorization)
+
+	response := ParseResponse(t, rr)
+	ResultShouldExist(t, response)
+	ResultShouldBe(t, ErrInvalidAuthorization, response["result"])
 }
 
 func testHeaderInvalid(t *testing.T) {
@@ -34,7 +37,10 @@ func testHeaderInvalid(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	HttpResponseShouldBe(t, rr, ErrInvalidAuthorization)
+
+	response := ParseResponse(t, rr)
+	ResultShouldExist(t, response)
+	ResultShouldBe(t, ErrInvalidAuthorization, response["result"])
 }
 
 func testTokenInvalid(t *testing.T) {
@@ -45,7 +51,9 @@ func testTokenInvalid(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	HttpResponseShouldBe(t, rr, ErrInvalidToken)
+	response := ParseResponse(t, rr)
+	ResultShouldExist(t, response)
+	ResultShouldBe(t, ErrInvalidToken, response["result"])
 }
 
 func testTokenOlderThan1Minute(t *testing.T) {
@@ -58,7 +66,10 @@ func testTokenOlderThan1Minute(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
-	HttpResponseShouldBe(t, rr, ErrTokenExpired)
+
+	response := ParseResponse(t, rr)
+	ResultShouldExist(t, response)
+	ResultShouldBe(t, ErrTokenExpired, response["result"])
 }
 
 func prepareGetTasksRequest(t *testing.T) *http.Request {
