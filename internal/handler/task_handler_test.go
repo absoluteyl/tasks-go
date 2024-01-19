@@ -60,6 +60,9 @@ func TestTaskHandler(t *testing.T) {
 
 	t.Run("GetList", testGetList)
 
+	t.Run("UpdateWithoutID", testUpdateWithoutID)
+	t.Run("UpdateWithoutID", testUpdateWithInvalidID)
+	t.Run("UpdateWithIDInBody", testUpdateWithIDInBody)
 	t.Run("UpdateNotExist", testUpdateNotExist)
 	t.Run("Update", testUpdate)
 
@@ -146,11 +149,55 @@ func testGetList(t *testing.T) {
 	}
 }
 
-func testUpdateNotExist(t *testing.T) {
+func testUpdateWithoutID(t *testing.T) {
 	taskData := map[string]interface{}{
-		"id":     2,
 		"name":   "Eat Lunch",
 		"status": 1,
+	}
+
+	reqBody := prepareJsonBody(t, taskData)
+
+	req, err := http.NewRequest("PUT", "/task/", bytes.NewBuffer(reqBody))
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+
+	rr := httptest.NewRecorder()
+	taskHandler.UpdateTaskHandler(rr, req)
+
+	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
+
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldBe(t, "Missing task ID", response["result"])
+}
+
+func testUpdateWithInvalidID(t *testing.T) {
+	taskData := map[string]interface{}{
+		"name":   "Eat Lunch",
+		"status": 1,
+	}
+
+	reqBody := prepareJsonBody(t, taskData)
+
+	req, err := http.NewRequest("PUT", "/task/invalid", bytes.NewBuffer(reqBody))
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+
+	rr := httptest.NewRecorder()
+	taskHandler.UpdateTaskHandler(rr, req)
+
+	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
+
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldBe(t, "Invalid task ID", response["result"])
+}
+
+func testUpdateWithIDInBody(t *testing.T) {
+	taskData := map[string]interface{}{
+		"id": 1,
 	}
 
 	reqBody := prepareJsonBody(t, taskData)
@@ -160,19 +207,38 @@ func testUpdateNotExist(t *testing.T) {
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
 
-	HttpStatusShouldBe(t, rr, http.StatusNotFound)
+	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
+
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldBe(t, "Invalid request body: task ID not allowed", response["result"])
 }
 
-func testUpdate(t *testing.T) {
+func testUpdateNotExist(t *testing.T) {
 	taskData := map[string]interface{}{
-		"id":     1,
 		"name":   "Eat Lunch",
 		"status": 1,
 	}
 
 	reqBody := prepareJsonBody(t, taskData)
 
-	req := prepareUpdateTaskRequest(t, taskData["id"].(int), reqBody)
+	req := prepareUpdateTaskRequest(t, 2, reqBody)
+
+	rr := httptest.NewRecorder()
+	taskHandler.UpdateTaskHandler(rr, req)
+
+	HttpStatusShouldBe(t, rr, http.StatusNotFound)
+}
+
+func testUpdate(t *testing.T) {
+	taskData := map[string]interface{}{
+		"name":   "Eat Lunch",
+		"status": 1,
+	}
+
+	reqBody := prepareJsonBody(t, taskData)
+
+	req := prepareUpdateTaskRequest(t, 1, reqBody)
 
 	rr := httptest.NewRecorder()
 	taskHandler.UpdateTaskHandler(rr, req)
@@ -185,7 +251,7 @@ func testUpdate(t *testing.T) {
 	assert.True(t, ok, "Result field not found in response")
 
 	taskShouldBe(t, model.Task{
-		ID:     taskData["id"].(int),
+		ID:     1,
 		Name:   taskData["name"].(string),
 		Status: taskData["status"].(int),
 	}, model.Task{
