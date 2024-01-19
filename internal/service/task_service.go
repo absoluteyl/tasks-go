@@ -18,12 +18,7 @@ func (s *TaskService) CreateTask(taskName string) (int, error) {
 }
 
 func (s *TaskService) GetTasks() ([]model.Task, error) {
-	tasks, err := s.taskRepository.GetTasks()
-	if err != nil {
-		return nil, err
-	}
-
-	return tasks, nil
+	return s.taskRepository.GetTasks()
 }
 
 func (s *TaskService) UpdateTask(task *model.Task) error {
