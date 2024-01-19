@@ -34,3 +34,7 @@ func HTTPBodyShouldHaveResultField(t *testing.T, response map[string]interface{}
 	assert.True(t, ok, "Result field not found in response")
 	return result, ok
 }
+
+func ResultShouldBe(t *testing.T, expected interface{}, result interface{}) {
+	assert.Equal(t, expected, result, "Result field value is unexpected")
+}
