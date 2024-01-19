@@ -278,15 +278,6 @@ func testDelete(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 }
 
-func prepareDeleteTaskRequest(t *testing.T, id int) *http.Request {
-	taskID := fmt.Sprintf("%d", id)
-	req, err := http.NewRequest("DELETE", "/task/"+taskID, nil)
-	if err != nil {
-		t.Fatalf("Error creating request: %v", err)
-	}
-	return req
-}
-
 func prepareCreateTaskRequest(t *testing.T, body []byte) *http.Request {
 	req, err := http.NewRequest("POST", "/task", bytes.NewBuffer(body))
 	if err != nil {
@@ -306,6 +297,15 @@ func prepareGetTasksRequest(t *testing.T) *http.Request {
 func prepareUpdateTaskRequest(t *testing.T, id int, body []byte) *http.Request {
 	taskID := fmt.Sprintf("%d", id)
 	req, err := http.NewRequest("PUT", "/task/"+taskID, bytes.NewBuffer(body))
+	if err != nil {
+		t.Fatalf("Error creating request: %v", err)
+	}
+	return req
+}
+
+func prepareDeleteTaskRequest(t *testing.T, id int) *http.Request {
+	taskID := fmt.Sprintf("%d", id)
+	req, err := http.NewRequest("DELETE", "/task/"+taskID, nil)
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
 	}
