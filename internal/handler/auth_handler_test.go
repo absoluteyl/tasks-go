@@ -21,11 +21,11 @@ func TestCreateAuthHandler(t *testing.T) {
 
 	response := parseMapResponse(t, rr)
 
-	token, ok := response["token"]
-	assert.True(t, ok, "Token field not found in response")
+	token, ok := response["result"]
+	assert.True(t, ok, "Result field not found in response")
 
 	_, ok = token.(string)
-	assert.True(t, ok, "Token field is not a string")
+	assert.True(t, ok, "Result field is not a string")
 }
 func parseMapResponse(t *testing.T, rr *httptest.ResponseRecorder) map[string]interface{} {
 	var response map[string]interface{}
