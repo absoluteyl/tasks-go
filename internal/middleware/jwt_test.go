@@ -52,6 +52,7 @@ func testTokenInvalid(t *testing.T) {
 	jwtHandler.ServeHTTP(rr, req)
 
 	HttpStatusShouldBe(t, rr, http.StatusUnauthorized)
+
 	response := ParseResponse(t, rr)
 	ResultShouldExist(t, response)
 	ResultShouldBe(t, ErrInvalidToken, response["result"])
