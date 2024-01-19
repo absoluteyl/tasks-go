@@ -6,7 +6,12 @@ import (
 	"time"
 )
 
-func TestGenerateToken(t *testing.T) {
+func TestAuth(t *testing.T) {
+	t.Run("GenerateToken", testGenerateToken)
+	t.Run("ParseToken", testParseToken)
+}
+
+func testGenerateToken(t *testing.T) {
 	tokenString, err := GenerateToken()
 	if err != nil {
 		t.Fatalf("Failed to generate token: %v", err)
@@ -46,7 +51,7 @@ func TestGenerateToken(t *testing.T) {
 	}
 }
 
-func TestParseToken(t *testing.T) {
+func testParseToken(t *testing.T) {
 	tokenString, err := GenerateToken()
 	if err != nil {
 		t.Fatalf("Failed to generate token: %v", err)
