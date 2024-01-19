@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
@@ -13,52 +14,28 @@ func TestAuth(t *testing.T) {
 
 func testGenerateToken(t *testing.T) {
 	tokenString, err := GenerateToken()
-	if err != nil {
-		t.Fatalf("Failed to generate token: %v", err)
-	}
-
-	if tokenString == "" {
-		t.Fatal("Generated token is empty")
-	}
+	assert.NoError(t, err, "Failed to generate token")
+	assert.NotEmpty(t, tokenString, "Generated token is empty")
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.NewValidationError("Unexpected signing method", jwt.ValidationErrorSignatureInvalid)
-		}
-
 		return []byte(jwtSecret), nil
 	})
-
-	if err != nil {
-		t.Fatalf("Failed to parse token: %v", err)
-	}
-
-	if !token.Valid {
-		t.Fatal("Token is not valid")
-	}
+	assert.NoError(t, err, "Failed to parse token")
+	assert.True(t, token.Valid, "Token is not valid")
+	assert.Equal(t, jwt.SigningMethodHS256, token.Method, "Invalid signing method")
 
 	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		t.Fatal("Invalid token claims")
-	}
+	assert.True(t, ok, "Invalid token claims")
 
-	if iat, ok := claims["iat"].(float64); ok {
-		if time.Now().Before(time.Unix(int64(iat), 0)) {
-			t.Fatal("Token issued at time is in the future")
-		}
-	} else {
-		t.Fatal("Invalid issued at claim")
-	}
+	iat, ok := claims["iat"].(float64)
+	assert.True(t, ok, "Invalid issued at claim")
+	assert.True(t, time.Now().After(time.Unix(int64(iat), 0)), "Token issued at time is in the future")
 }
 
 func testParseToken(t *testing.T) {
 	tokenString, err := GenerateToken()
-	if err != nil {
-		t.Fatalf("Failed to generate token: %v", err)
-	}
+	assert.NoError(t, err, "Failed to generate token")
 
 	_, err = ParseToken(tokenString)
-	if err != nil {
-		t.Fatalf("Failed to parse token: %v", err)
-	}
+	assert.NoError(t, err, "Failed to parse token")
 }
