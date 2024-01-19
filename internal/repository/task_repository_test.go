@@ -61,6 +61,7 @@ func testCreateTask(t *testing.T) {
 
 func testGetTasks(t *testing.T) {
 	tasks, err := taskRepo.GetTasks()
+
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tasks)
 	assert.Len(t, tasks, 1)
