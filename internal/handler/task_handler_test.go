@@ -59,6 +59,8 @@ func TestTaskHandler(t *testing.T) {
 	t.Run("Create", testCreate)
 
 	t.Run("GetList", testGetList)
+
+	t.Run("UpdateNotExist", testUpdateNotExist)
 	t.Run("Update", testUpdate)
 	t.Run("Delete", testDelete)
 }
@@ -143,6 +145,26 @@ func testGetList(t *testing.T) {
 			Status: int(result[i]["status"].(float64)),
 		})
 	}
+}
+
+func testUpdateNotExist(t *testing.T) {
+	taskData := model.Task{
+		ID:     2,
+		Name:   "Eat Lunch",
+		Status: 1,
+	}
+
+	taskJson, err := json.Marshal(taskData)
+	if err != nil {
+		t.Fatalf("Error marshaling JSON: %v", err)
+	}
+
+	req := prepareUpdateTaskRequest(t, taskJson)
+
+	rr := httptest.NewRecorder()
+	taskHandler.UpdateTaskHandler(rr, req)
+
+	testutils.HttpStatusShouldBe(t, rr, http.StatusNotFound)
 }
 
 func testUpdate(t *testing.T) {

@@ -80,6 +80,12 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	existingTask, err := h.taskService.GetTaskByID(targetTask.ID)
+	if err != nil || existingTask.ID == 0 {
+		http.Error(w, "Task not found", http.StatusNotFound)
+		return
+	}
+
 	err = h.taskService.UpdateTask(&targetTask)
 	if err != nil {
 		http.Error(w, "Error updating task", http.StatusInternalServerError)
