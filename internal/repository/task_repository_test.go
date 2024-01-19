@@ -13,6 +13,11 @@ import (
 
 var testDB *sql.DB
 var taskRepo *TaskRepository
+var taskData = model.Task{
+	ID:     1,
+	Name:   "Eat Dinner",
+	Status: 0,
+}
 
 func TestMain(m *testing.M) {
 	t := &testing.T{}
@@ -52,7 +57,7 @@ func TestTaskRepository(t *testing.T) {
 }
 
 func testCreateTask(t *testing.T) {
-	taskName := "Eat Dinner"
+	taskName := taskData.Name
 
 	taskID, err := taskRepo.CreateTask(taskName)
 	assert.NoError(t, err)
@@ -61,40 +66,36 @@ func testCreateTask(t *testing.T) {
 
 func testGetTasks(t *testing.T) {
 	tasks, err := taskRepo.GetTasks()
-
 	assert.NoError(t, err)
 	assert.NotEmpty(t, tasks)
 	assert.Len(t, tasks, 1)
 
-	assert.Equal(t, 1, tasks[0].ID)
-	assert.Equal(t, "Eat Dinner", tasks[0].Name)
-	assert.Equal(t, 0, tasks[0].Status)
+	assert.Equal(t, taskData.ID, tasks[0].ID)
+	assert.Equal(t, taskData.Name, tasks[0].Name)
+	assert.Equal(t, taskData.Status, tasks[0].Status)
 }
 
 func testUpdateTask(t *testing.T) {
-	task := &model.Task{
-		ID:     1,
-		Name:   "Eat Lunch",
-		Status: 1,
-	}
+	taskData.Name = "Eat Lunch"
+	taskData.Status = 1
 
-	err := taskRepo.UpdateTask(task)
+	err := taskRepo.UpdateTask(&taskData)
 	assert.NoError(t, err)
 
-	updatedTask, err := taskRepo.GetTaskByID(task.ID)
+	updatedTask, err := taskRepo.GetTaskByID(taskData.ID)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, updatedTask)
 
-	assert.Equal(t, task.ID, updatedTask.ID)
-	assert.Equal(t, task.Name, updatedTask.Name)
-	assert.Equal(t, task.Status, updatedTask.Status)
+	assert.Equal(t, taskData.ID, updatedTask.ID)
+	assert.Equal(t, taskData.Name, updatedTask.Name)
+	assert.Equal(t, taskData.Status, updatedTask.Status)
 }
 
 func testDeleteTask(t *testing.T) {
-	err := taskRepo.DeleteTask(1)
+	err := taskRepo.DeleteTask(taskData.ID)
 	assert.NoError(t, err)
 
-	_, err = taskRepo.GetTaskByID(1)
+	_, err = taskRepo.GetTaskByID(taskData.ID)
 	assert.Error(t, err)
 	assert.Equal(t, sql.ErrNoRows, err)
 }
