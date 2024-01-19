@@ -73,7 +73,6 @@ func testCreateMissingName(t *testing.T) {
 	taskData := map[string]interface{}{}
 
 	reqBody := PrepareJsonBody(t, taskData)
-
 	req := prepareCreateTaskRequest(t, reqBody)
 
 	rr := httptest.NewRecorder()
@@ -91,7 +90,6 @@ func testCreate(t *testing.T) {
 	}
 
 	reqBody := PrepareJsonBody(t, taskData)
-
 	req := prepareCreateTaskRequest(t, reqBody)
 
 	rr := httptest.NewRecorder()
@@ -99,11 +97,10 @@ func testCreate(t *testing.T) {
 
 	HttpStatusShouldBe(t, rr, http.StatusCreated)
 
-	response := ParseMapMapResponse(t, rr)
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
 
-	result, ok := response["result"]
-	assert.True(t, ok, "Result field not found in response")
-
+	result := response["result"].(map[string]interface{})
 	taskShouldBe(t, model.Task{
 		ID:     1,
 		Name:   taskData["name"].(string),
@@ -131,19 +128,25 @@ func testGetList(t *testing.T) {
 
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 
-	response := ParseMapArrayResponse(t, rr)
-
-	result, ok := response["result"]
-	assert.True(t, ok, "Result field not found in response")
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
 
 	expectedLength := len(tasksData)
-	assert.Equal(t, expectedLength, len(result), "Unexpected task length in response")
+	results, ok := response["result"].([]interface{})
+	if !ok {
+		t.Fatalf("Unexpected result type: %T", response["result"])
+	}
+	assert.Equal(t, expectedLength, len(results), "Unexpected task length in response")
 
 	for i, task := range tasksData {
+		result, ok := results[i].(map[string]interface{})
+		if !ok {
+			t.Fatalf("Unexpected result type: %T", results[i])
+		}
 		taskShouldBe(t, task, model.Task{
-			ID:     int(result[i]["id"].(float64)),
-			Name:   result[i]["name"].(string),
-			Status: int(result[i]["status"].(float64)),
+			ID:     int(result["id"].(float64)),
+			Name:   result["name"].(string),
+			Status: int(result["status"].(float64)),
 		})
 	}
 }
@@ -155,7 +158,6 @@ func testUpdateWithoutID(t *testing.T) {
 	}
 
 	reqBody := PrepareJsonBody(t, taskData)
-
 	req, err := http.NewRequest("PUT", "/task/", bytes.NewBuffer(reqBody))
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
@@ -178,7 +180,6 @@ func testUpdateWithInvalidID(t *testing.T) {
 	}
 
 	reqBody := PrepareJsonBody(t, taskData)
-
 	req, err := http.NewRequest("PUT", "/task/invalid", bytes.NewBuffer(reqBody))
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
@@ -200,7 +201,6 @@ func testUpdateWithIDInBody(t *testing.T) {
 	}
 
 	reqBody := PrepareJsonBody(t, taskData)
-
 	req := prepareUpdateTaskRequest(t, taskData["id"].(int), reqBody)
 
 	rr := httptest.NewRecorder()
@@ -220,7 +220,6 @@ func testUpdateNotExist(t *testing.T) {
 	}
 
 	reqBody := PrepareJsonBody(t, taskData)
-
 	req := prepareUpdateTaskRequest(t, 2, reqBody)
 
 	rr := httptest.NewRecorder()
@@ -236,7 +235,6 @@ func testUpdate(t *testing.T) {
 	}
 
 	reqBody := PrepareJsonBody(t, taskData)
-
 	req := prepareUpdateTaskRequest(t, 1, reqBody)
 
 	rr := httptest.NewRecorder()
@@ -244,11 +242,10 @@ func testUpdate(t *testing.T) {
 
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 
-	response := ParseMapMapResponse(t, rr)
+	response := ParseResponse(t, rr)
+	HTTPBodyShouldHaveResultField(t, response)
 
-	result, ok := response["result"]
-	assert.True(t, ok, "Result field not found in response")
-
+	result := response["result"].(map[string]interface{})
 	taskShouldBe(t, model.Task{
 		ID:     1,
 		Name:   taskData["name"].(string),
