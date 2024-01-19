@@ -81,7 +81,7 @@ func testCreateMissingName(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 	ResultShouldBe(t, ErrMissingTaskName, response["result"])
 }
 
@@ -99,7 +99,7 @@ func testCreate(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusCreated)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 
 	result := response["result"].(map[string]interface{})
 	taskShouldBe(t, model.Task{
@@ -130,7 +130,7 @@ func testGetList(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 
 	expectedLength := len(tasksData)
 	results, ok := response["result"].([]interface{})
@@ -170,7 +170,7 @@ func testUpdateWithoutID(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 	ResultShouldBe(t, ErrMissingTaskID, response["result"])
 }
 
@@ -192,7 +192,7 @@ func testUpdateWithInvalidID(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 	ResultShouldBe(t, ErrInvalidTaskID, response["result"])
 }
 
@@ -210,7 +210,7 @@ func testUpdateWithIDInBody(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusBadRequest)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 	ResultShouldBe(t, ErrNotAllowTaskID, response["result"])
 }
 
@@ -229,7 +229,7 @@ func testUpdateNotExist(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusNotFound)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 	ResultShouldBe(t, "Task not found", response["result"])
 }
 
@@ -248,7 +248,7 @@ func testUpdate(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 
 	result := response["result"].(map[string]interface{})
 	taskShouldBe(t, model.Task{
@@ -271,7 +271,7 @@ func testDeleteNotExist(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusNotFound)
 
 	response := ParseResponse(t, rr)
-	HTTPBodyShouldHaveResultField(t, response)
+	ResultShouldExist(t, response)
 	ResultShouldBe(t, "Task not found", response["result"])
 }
 

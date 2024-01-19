@@ -37,7 +37,7 @@ func HttpResponseShouldBe(t *testing.T, rr *httptest.ResponseRecorder, expectedB
 	assert.Equal(t, expectedBody, rr.Body.String(), "Handler returned unexpected body")
 }
 
-func HTTPBodyShouldHaveResultField(t *testing.T, response map[string]interface{}) (interface{}, bool) {
+func ResultShouldExist(t *testing.T, response map[string]interface{}) (interface{}, bool) {
 	result, ok := response["result"]
 	assert.True(t, ok, "Result field not found in response")
 	return result, ok

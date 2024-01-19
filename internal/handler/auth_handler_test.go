@@ -36,7 +36,7 @@ func testCreateAuth(t *testing.T) {
 	HttpStatusShouldBe(t, rr, http.StatusOK)
 
 	response := ParseResponse(t, rr)
-	result, ok := HTTPBodyShouldHaveResultField(t, response)
+	result, ok := ResultShouldExist(t, response)
 
 	_, ok = result.(string)
 	assert.True(t, ok, "Result field is not a string")
