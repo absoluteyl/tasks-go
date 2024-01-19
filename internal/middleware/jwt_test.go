@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/absoluteyl/tasks-go/pkg/auth"
 	. "github.com/absoluteyl/tasks-go/pkg/testutils"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -58,7 +59,8 @@ func testTokenInvalid(t *testing.T) {
 
 func testTokenOlderThan1Minute(t *testing.T) {
 	req := prepareGetTasksRequest(t)
-	tokenString := generateJWTToken(t)
+	tokenString, err := auth.GenerateToken(time.Now().Add(-2 * time.Minute).Unix())
+	assert.NoError(t, err)
 
 	SetupAuthorizationHeader(req, "Bearer "+tokenString)
 
@@ -85,16 +87,4 @@ func prepareHandlerRecorderWithMiddleware() (*httptest.ResponseRecorder, http.Ha
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
 	middlewareHandler := JWTMiddleware(handler)
 	return rr, middlewareHandler
-}
-
-func generateJWTToken(t *testing.T) string {
-	token := auth.SetSignMethod()
-
-	auth.PrepareClaims(token, time.Now().Add(-2*time.Minute).Unix())
-
-	tokenString, err := auth.Sign(token)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return tokenString
 }

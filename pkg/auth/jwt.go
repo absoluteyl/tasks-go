@@ -3,15 +3,14 @@ package auth
 import (
 	"github.com/dgrijalva/jwt-go"
 	"os"
-	"time"
 )
 
 var jwtSecret = os.Getenv("JWT_SECRET")
 
-func GenerateToken() (string, error) {
+func GenerateToken(iat int64) (string, error) {
 	token := SetSignMethod()
 
-	PrepareClaims(token, time.Now().Unix())
+	PrepareClaims(token, iat)
 
 	return Sign(token)
 }

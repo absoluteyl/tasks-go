@@ -4,6 +4,7 @@ import (
 	"github.com/absoluteyl/tasks-go/pkg/auth"
 	"net/http"
 	"os"
+	"time"
 )
 
 var (
@@ -22,7 +23,7 @@ func CreateAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.GenerateToken()
+	token, err := auth.GenerateToken(time.Now().Unix())
 	if err != nil {
 		SetErrResponse(w, http.StatusInternalServerError, ErrInternalServerError)
 		return

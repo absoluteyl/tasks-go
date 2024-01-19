@@ -13,7 +13,7 @@ func TestAuth(t *testing.T) {
 }
 
 func testGenerateToken(t *testing.T) {
-	tokenString, err := GenerateToken()
+	tokenString, err := GenerateToken(time.Now().Unix())
 	assert.NoError(t, err, "Failed to generate token")
 	assert.NotEmpty(t, tokenString, "Generated token is empty")
 
@@ -33,7 +33,7 @@ func testGenerateToken(t *testing.T) {
 }
 
 func testParseToken(t *testing.T) {
-	tokenString, err := GenerateToken()
+	tokenString, err := GenerateToken(time.Now().Unix())
 	assert.NoError(t, err, "Failed to generate token")
 
 	_, err = ParseToken(tokenString)
