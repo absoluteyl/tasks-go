@@ -109,8 +109,13 @@ func (h *TaskHandler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Missing task ID", http.StatusBadRequest)
 		return
 	}
-
 	taskID, err := strconv.Atoi(id)
+	existingTask, err := h.taskService.GetTaskByID(taskID)
+	if err != nil || existingTask.ID == 0 {
+		http.Error(w, "Task not found", http.StatusNotFound)
+		return
+	}
+
 	err = h.taskService.DeleteTask(taskID)
 	if err != nil {
 		http.Error(w, "Error deleting task", http.StatusInternalServerError)

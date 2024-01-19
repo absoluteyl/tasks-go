@@ -62,6 +62,8 @@ func TestTaskHandler(t *testing.T) {
 
 	t.Run("UpdateNotExist", testUpdateNotExist)
 	t.Run("Update", testUpdate)
+
+	t.Run("DeleteNotExist", testDeleteNotExist)
 	t.Run("Delete", testDelete)
 }
 
@@ -198,8 +200,17 @@ func testUpdate(t *testing.T) {
 	})
 }
 
+func testDeleteNotExist(t *testing.T) {
+	req := prepareDeleteTaskRequest(t, 999)
+
+	rr := httptest.NewRecorder()
+	taskHandler.DeleteTaskHandler(rr, req)
+
+	testutils.HttpStatusShouldBe(t, rr, http.StatusNotFound)
+}
+
 func testDelete(t *testing.T) {
-	req := prepareDeleteTaskRequest(t)
+	req := prepareDeleteTaskRequest(t, 1)
 
 	rr := httptest.NewRecorder()
 	taskHandler.DeleteTaskHandler(rr, req)
@@ -207,8 +218,9 @@ func testDelete(t *testing.T) {
 	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
 }
 
-func prepareDeleteTaskRequest(t *testing.T) *http.Request {
-	req, err := http.NewRequest("DELETE", "/task/1", nil)
+func prepareDeleteTaskRequest(t *testing.T, id int) *http.Request {
+	taskID := fmt.Sprintf("%d", id)
+	req, err := http.NewRequest("DELETE", "/task/"+taskID, nil)
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
 	}
