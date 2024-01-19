@@ -55,13 +55,35 @@ func teardown() {
 }
 
 func TestTaskHandler(t *testing.T) {
-	t.Run("CreateTaskHandler", testCreateTaskHandler)
-	t.Run("GetTasksHandler", testGetTaskHandler)
-	t.Run("UpdateTaskHandler", testUpdateTaskHandler)
-	t.Run("DeleteTaskHandler", testDeleteTaskHandler)
+	t.Run("CreateMissingName", testCreateMissingName)
+	t.Run("Create", testCreate)
+
+	t.Run("GetList", testGetList)
+
+	t.Run("UpdateNotExist", testUpdateNotExist)
+	t.Run("Update", testUpdate)
+
+	t.Run("DeleteNotExist", testDeleteNotExist)
+	t.Run("Delete", testDelete)
 }
 
-func testCreateTaskHandler(t *testing.T) {
+func testCreateMissingName(t *testing.T) {
+	taskData := map[string]interface{}{}
+
+	taskJson, err := json.Marshal(taskData)
+	if err != nil {
+		t.Fatalf("Error marshaling JSON: %v", err)
+	}
+
+	req := prepareCreateTaskRequest(t, taskJson)
+
+	rr := httptest.NewRecorder()
+	taskHandler.CreateTaskHandler(rr, req)
+
+	testutils.HttpStatusShouldBe(t, rr, http.StatusBadRequest)
+}
+
+func testCreate(t *testing.T) {
 	taskData := map[string]interface{}{
 		"name": "Eat Dinner",
 	}
@@ -94,7 +116,7 @@ func testCreateTaskHandler(t *testing.T) {
 	})
 }
 
-func testGetTaskHandler(t *testing.T) {
+func testGetList(t *testing.T) {
 	tasksData := []model.Task{
 		{
 			ID:     1,
@@ -127,7 +149,27 @@ func testGetTaskHandler(t *testing.T) {
 	}
 }
 
-func testUpdateTaskHandler(t *testing.T) {
+func testUpdateNotExist(t *testing.T) {
+	taskData := model.Task{
+		ID:     2,
+		Name:   "Eat Lunch",
+		Status: 1,
+	}
+
+	taskJson, err := json.Marshal(taskData)
+	if err != nil {
+		t.Fatalf("Error marshaling JSON: %v", err)
+	}
+
+	req := prepareUpdateTaskRequest(t, taskJson)
+
+	rr := httptest.NewRecorder()
+	taskHandler.UpdateTaskHandler(rr, req)
+
+	testutils.HttpStatusShouldBe(t, rr, http.StatusNotFound)
+}
+
+func testUpdate(t *testing.T) {
 	taskData := model.Task{
 		ID:     1,
 		Name:   "Eat Lunch",
@@ -158,8 +200,17 @@ func testUpdateTaskHandler(t *testing.T) {
 	})
 }
 
-func testDeleteTaskHandler(t *testing.T) {
-	req := prepareDeleteTaskRequest(t)
+func testDeleteNotExist(t *testing.T) {
+	req := prepareDeleteTaskRequest(t, 999)
+
+	rr := httptest.NewRecorder()
+	taskHandler.DeleteTaskHandler(rr, req)
+
+	testutils.HttpStatusShouldBe(t, rr, http.StatusNotFound)
+}
+
+func testDelete(t *testing.T) {
+	req := prepareDeleteTaskRequest(t, 1)
 
 	rr := httptest.NewRecorder()
 	taskHandler.DeleteTaskHandler(rr, req)
@@ -167,8 +218,9 @@ func testDeleteTaskHandler(t *testing.T) {
 	testutils.HttpStatusShouldBe(t, rr, http.StatusOK)
 }
 
-func prepareDeleteTaskRequest(t *testing.T) *http.Request {
-	req, err := http.NewRequest("DELETE", "/task/1", nil)
+func prepareDeleteTaskRequest(t *testing.T, id int) *http.Request {
+	taskID := fmt.Sprintf("%d", id)
+	req, err := http.NewRequest("DELETE", "/task/"+taskID, nil)
 	if err != nil {
 		t.Fatalf("Error creating request: %v", err)
 	}

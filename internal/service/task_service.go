@@ -13,8 +13,8 @@ func NewTaskServiceWithRepository(taskRepository *repository.TaskRepository) *Ta
 	return &TaskService{taskRepository: taskRepository}
 }
 
-func (s *TaskService) CreateTask(task *model.Task) (int, error) {
-	return s.taskRepository.CreateTask(task)
+func (s *TaskService) CreateTask(taskName string) (int, error) {
+	return s.taskRepository.CreateTask(taskName)
 }
 
 func (s *TaskService) GetTasks() ([]model.Task, error) {
@@ -32,4 +32,8 @@ func (s *TaskService) UpdateTask(task *model.Task) error {
 
 func (s *TaskService) DeleteTask(id int) error {
 	return s.taskRepository.DeleteTask(id)
+}
+
+func (s *TaskService) GetTaskByID(id int) (model.Task, error) {
+	return s.taskRepository.GetTaskByID(id)
 }

@@ -18,24 +18,31 @@ func NewTaskHandler(taskService *service.TaskService) *TaskHandler {
 }
 
 func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
-	var newTask model.Task
-	err := json.NewDecoder(r.Body).Decode(&newTask)
+	var taskData map[string]interface{}
+	err := json.NewDecoder(r.Body).Decode(&taskData)
 	if err != nil {
-		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	createdTaskID, err := h.taskService.CreateTask(&newTask)
+	if _, ok := taskData["name"]; !ok {
+		http.Error(w, "Missing name attribute in request body", http.StatusBadRequest)
+		return
+	}
+
+	createdTaskID, err := h.taskService.CreateTask(taskData["name"].(string))
 	if err != nil {
 		http.Error(w, "Error creating task", http.StatusInternalServerError)
 		return
 	}
 
+	newTask, err := h.taskService.GetTaskByID(createdTaskID)
+
 	response := map[string]interface{}{
 		"result": map[string]interface{}{
-			"id":     createdTaskID,
+			"id":     newTask.ID,
 			"name":   newTask.Name,
-			"status": 0, // FIXME: Temporary fixed status
+			"status": newTask.Status,
 		},
 	}
 
@@ -73,6 +80,12 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	existingTask, err := h.taskService.GetTaskByID(targetTask.ID)
+	if err != nil || existingTask.ID == 0 {
+		http.Error(w, "Task not found", http.StatusNotFound)
+		return
+	}
+
 	err = h.taskService.UpdateTask(&targetTask)
 	if err != nil {
 		http.Error(w, "Error updating task", http.StatusInternalServerError)
@@ -96,8 +109,13 @@ func (h *TaskHandler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Missing task ID", http.StatusBadRequest)
 		return
 	}
-
 	taskID, err := strconv.Atoi(id)
+	existingTask, err := h.taskService.GetTaskByID(taskID)
+	if err != nil || existingTask.ID == 0 {
+		http.Error(w, "Task not found", http.StatusNotFound)
+		return
+	}
+
 	err = h.taskService.DeleteTask(taskID)
 	if err != nil {
 		http.Error(w, "Error deleting task", http.StatusInternalServerError)
