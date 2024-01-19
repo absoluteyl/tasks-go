@@ -18,26 +18,33 @@ func NewTaskHandler(taskService *service.TaskService) *TaskHandler {
 }
 
 func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	setContentType(w)
+
 	var taskData map[string]interface{}
 	err := json.NewDecoder(r.Body).Decode(&taskData)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		setErrResponse(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
 	if _, ok := taskData["name"]; !ok {
-		http.Error(w, "Missing name attribute in request body", http.StatusBadRequest)
+		setErrResponse(w, http.StatusBadRequest, "Missing name attribute in request body")
 		return
 	}
 
 	createdTaskID, err := h.taskService.CreateTask(taskData["name"].(string))
 	if err != nil {
-		http.Error(w, "Error creating task", http.StatusInternalServerError)
+		setErrResponse(w, http.StatusInternalServerError, "Error creating task")
 		return
 	}
 
 	newTask, err := h.taskService.GetTaskByID(createdTaskID)
+	if err != nil {
+		setErrResponse(w, http.StatusInternalServerError, "Error getting created task")
+		return
+	}
 
+	w.WriteHeader(http.StatusCreated)
 	response := map[string]interface{}{
 		"result": map[string]interface{}{
 			"id":     newTask.ID,
@@ -45,13 +52,7 @@ func (h *TaskHandler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) 
 			"status": newTask.Status,
 		},
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+	jsonEncode(w, response)
 }
 
 func (h *TaskHandler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
@@ -121,4 +122,23 @@ func (h *TaskHandler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Error deleting task", http.StatusInternalServerError)
 		return
 	}
+}
+
+func setContentType(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func jsonEncode(w http.ResponseWriter, response map[string]interface{}) {
+	encodeErr := json.NewEncoder(w).Encode(response)
+	if encodeErr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+}
+
+func setErrResponse(w http.ResponseWriter, httpCode int, msg string) {
+	w.WriteHeader(httpCode)
+	response := map[string]interface{}{
+		"result": msg,
+	}
+	jsonEncode(w, response)
 }
