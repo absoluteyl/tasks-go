@@ -55,13 +55,13 @@ func teardown() {
 }
 
 func TestTaskHandler(t *testing.T) {
-	t.Run("CreateTaskHandler", testCreateTaskHandler)
-	t.Run("GetTasksHandler", testGetTaskHandler)
-	t.Run("UpdateTaskHandler", testUpdateTaskHandler)
-	t.Run("DeleteTaskHandler", testDeleteTaskHandler)
+	t.Run("Create", testCreate)
+	t.Run("GetList", testGetList)
+	t.Run("Update", testUpdate)
+	t.Run("Delete", testDelete)
 }
 
-func testCreateTaskHandler(t *testing.T) {
+func testCreate(t *testing.T) {
 	taskData := map[string]interface{}{
 		"name": "Eat Dinner",
 	}
@@ -94,7 +94,7 @@ func testCreateTaskHandler(t *testing.T) {
 	})
 }
 
-func testGetTaskHandler(t *testing.T) {
+func testGetList(t *testing.T) {
 	tasksData := []model.Task{
 		{
 			ID:     1,
@@ -127,7 +127,7 @@ func testGetTaskHandler(t *testing.T) {
 	}
 }
 
-func testUpdateTaskHandler(t *testing.T) {
+func testUpdate(t *testing.T) {
 	taskData := model.Task{
 		ID:     1,
 		Name:   "Eat Lunch",
@@ -158,7 +158,7 @@ func testUpdateTaskHandler(t *testing.T) {
 	})
 }
 
-func testDeleteTaskHandler(t *testing.T) {
+func testDelete(t *testing.T) {
 	req := prepareDeleteTaskRequest(t)
 
 	rr := httptest.NewRecorder()
