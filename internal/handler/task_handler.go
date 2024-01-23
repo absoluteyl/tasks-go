@@ -109,8 +109,6 @@ func (h *TaskHandler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) 
 	if taskData["status"] != nil {
 		existingTask.Status = int(taskData["status"].(float64))
 	}
-	//existingTask.Name = taskData["name"].(string)
-	//existingTask.Status = int(taskData["status"].(float64))
 
 	err = h.taskService.UpdateTask(&existingTask)
 	if err != nil {
